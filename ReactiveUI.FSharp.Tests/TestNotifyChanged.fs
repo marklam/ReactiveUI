@@ -1,16 +1,19 @@
 ﻿namespace ReactiveUI.FSharp.Tests
 
+open System.Linq
 open Microsoft.Reactive.Testing
 open ReactiveUI.Tests
 open ReactiveUI.Testing
 open Xunit
+open ReactiveUI
+open ReactiveUI.FSharp
 
 type TestNotifyChanged() =
     [<Fact>]
     let OFPSimplePropertyTest() =
         (new TestScheduler()).With(fun sched -> 
             let fixture = new TestFixture()
-            let changes = fixture.ObservableForProperty(x => x.IsOnlyOneWord).CreateCollection()
+            let changes = NotifyChanged.forProperty(fixture, <@ fixture.IsOnlyOneWord @>).CreateCollection()
 
             fixture.IsOnlyOneWord <- "Foo"
             sched.Start()
@@ -30,7 +33,7 @@ type TestNotifyChanged() =
 
             Assert.True(changes.All(fun x -> x.Sender = fixture))
             Assert.True(changes.All(fun x -> x.GetPropertyName() = "IsOnlyOneWord"))
-            changes.Select(fun x -> x.Value).AssertAreEqual([| "Foo", "Bar", "Baz" |])
+            changes.Select(fun x -> x.Value).AssertAreEqual([| "Foo"; "Bar"; "Baz" |])
         )
 
 #if FALSE

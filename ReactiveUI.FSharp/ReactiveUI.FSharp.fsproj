@@ -10,8 +10,8 @@
     <RootNamespace>ReactiveUI.FSharp</RootNamespace>
     <AssemblyName>ReactiveUI.FSharp</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Profile7</TargetFrameworkProfile>
-    <TargetProfile>netcore</TargetProfile>
+		<TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
+		<TargetProfile>netcore</TargetProfile>
     <TargetFSharpCoreVersion>3.3.1.0</TargetFSharpCoreVersion>
     <Name>ReactiveUI.FSharp</Name>
   </PropertyGroup>
@@ -40,14 +40,11 @@
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.Portable.FSharp.Targets" />
   <ItemGroup>
     <Compile Include="NotifyChanged.fs" />
-    <None Include="Script.fsx" />
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">
-      <Name>FSharp.Core</Name>
-      <AssemblyName>FSharp.Core.dll</AssemblyName>
-      <HintPath>$(MSBuildExtensionsPath32)\..\Reference Assemblies\Microsoft\FSharp\.NETCore\$(TargetFSharpCoreVersion)\FSharp.Core.dll</HintPath>
+      <HintPath>..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\FSharp\.NETCore\3.3.1.0\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="Splat">
       <HintPath>..\packages\Splat.1.5.1\lib\Portable-net45+win+wpa81+wp80\Splat.dll</HintPath>
