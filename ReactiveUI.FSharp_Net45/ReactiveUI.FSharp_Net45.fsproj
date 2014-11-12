@@ -5,13 +5,13 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>a927e69c-2a44-4fae-acdf-d4b83141ce57</ProjectGuid>
+    <ProjectGuid>9bce9197-60d5-4c6b-bf0a-4a53869a2711</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>ReactiveUI.FSharp.Tests</RootNamespace>
-    <AssemblyName>ReactiveUI.FSharp.Tests</AssemblyName>
+    <RootNamespace>ReactiveUI.FSharp_Net45</RootNamespace>
+    <AssemblyName>ReactiveUI.FSharp</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
-    <Name>ReactiveUI.FSharp.Tests</Name>
+    <Name>ReactiveUI.FSharp_Net45</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,7 +21,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Debug\ReactiveUI.FSharp.Tests.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\ReactiveUI.FSharp_Net45.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,7 +30,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\ReactiveUI.FSharp.Tests.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\ReactiveUI.FSharp_Net45.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
@@ -49,25 +49,42 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <Compile Include="TestNotifyChanged.fs" />
     <Content Include="packages.config" />
+    <Compile Include="..\ReactiveUI.FSharp\ICreatesObservableForProperty.fs">
+      <Link>ICreatesObservableForProperty.fs</Link>
+    </Compile>
+    <Compile Include="..\ReactiveUI.FSharp\ObservedChange.fs">
+      <Link>ObservedChange.fs</Link>
+    </Compile>
+    <Compile Include="..\ReactiveUI.FSharp\POCOObservableForProperty.fs">
+      <Link>POCOObservableForProperty.fs</Link>
+    </Compile>
+    <Compile Include="..\ReactiveUI.FSharp\IROObservableForProperty.fs">
+      <Link>IROObservableForProperty.fs</Link>
+    </Compile>
+    <Compile Include="..\ReactiveUI.FSharp\INPCObservableForProperty.fs">
+      <Link>INPCObservableForProperty.fs</Link>
+    </Compile>
+    <Compile Include="..\ReactiveUI.FSharp\Registrations.fs">
+      <Link>Registrations.fs</Link>
+    </Compile>
+    <Compile Include="..\ReactiveUI.FSharp\NotifyChanged.fs">
+      <Link>NotifyChanged.fs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Reactive.Testing">
-      <HintPath>..\packages\Rx-Testing.2.2.5\lib\net45\Microsoft.Reactive.Testing.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="Splat">
       <HintPath>..\packages\Splat.1.5.1\lib\Net45\Splat.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Reactive.Core">
       <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
@@ -81,31 +98,12 @@
       <HintPath>..\packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Reactive.PlatformServices">
-      <HintPath>..\packages\Rx-PlatformServices.2.2.5\lib\net45\System.Reactive.PlatformServices.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="xunit">
-      <HintPath>..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Net45.csproj">
-      <Name>ReactiveUI.Testing_Net45</Name>
-      <Project>{dd99fd0f-82f6-4c30-930e-4a1d0df01d65}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Tests\ReactiveUI.Tests_Net45.csproj">
-      <Name>ReactiveUI.Tests_Net45</Name>
-      <Project>{6fbde6ea-2202-4a70-8ee4-7ba6d515952e}</Project>
-      <Private>True</Private>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Net45.csproj">
       <Name>ReactiveUI_Net45</Name>
       <Project>{1ce2d235-8072-4649-ba5a-cfb1af8776e0}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

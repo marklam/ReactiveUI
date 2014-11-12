@@ -13,7 +13,7 @@ type TestNotifyChanged() =
     let OFPSimplePropertyTest() =
         (new TestScheduler()).With(fun sched -> 
             let fixture = new TestFixture()
-            let changes = NotifyChanged.forProperty(fixture, <@ fixture.IsOnlyOneWord @>).CreateCollection()
+            let changes = NotifyChanged.forProperty(fixture, <@ fun x -> x.IsOnlyOneWord @>).CreateCollection()
 
             fixture.IsOnlyOneWord <- "Foo"
             sched.Start()

@@ -10,8 +10,8 @@
     <RootNamespace>ReactiveUI.FSharp</RootNamespace>
     <AssemblyName>ReactiveUI.FSharp</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-		<TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
-		<TargetProfile>netcore</TargetProfile>
+    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
+    <TargetProfile>netcore</TargetProfile>
     <TargetFSharpCoreVersion>3.3.1.0</TargetFSharpCoreVersion>
     <Name>ReactiveUI.FSharp</Name>
   </PropertyGroup>
@@ -39,6 +39,12 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.Portable.FSharp.Targets" />
   <ItemGroup>
+    <Compile Include="ICreatesObservableForProperty.fs" />
+    <Compile Include="ObservedChange.fs" />
+    <Compile Include="POCOObservableForProperty.fs" />
+    <Compile Include="IROObservableForProperty.fs" />
+    <Compile Include="INPCObservableForProperty.fs" />
+    <Compile Include="Registrations.fs" />
     <Compile Include="NotifyChanged.fs" />
     <Content Include="packages.config" />
   </ItemGroup>

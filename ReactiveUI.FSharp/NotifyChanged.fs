@@ -11,21 +11,6 @@ open Splat
 // TODO - fewer explicit types
 // TODO - merge ICreatesObservableForProperty?
 
-[<Interface; AllowNullLiteral>]
-type ICreatesObservableForProperty =
-    inherit Splat.IEnableLogger
-    abstract member GetAffinityForObject : ``type``:Type * propertyName:string * ?beforeChanged:bool -> int
-    abstract member GetNotificationForProperty : sender:obj * expression:Expr * ?beforeChanged:bool -> IObservable<IObservedChange<obj,obj>>
-
-type ObservedChange<'TSender, 'TValue when 'TValue:null>(sender:'TSender, expression:Expr, ?value:'TValue) =
-    member this.Expression     = expression
-
-    interface IObservedChange<'TSender,'TValue> with
-        member this.Expression = null
-        member this.Sender     = sender
-        member this.Value      = defaultArg value null
-
-
 // TODO - these Expression and Reflection bits seem overly complicated
 
 module Expression =
@@ -58,6 +43,7 @@ module Expression =
                 | PropertyGet(None, _, args)      -> args |> List.map constantArg |> List.iter(function | Some _ -> () | None -> raise (NotSupportedException("Indexers must have constant indexes"))); ()
                 | FieldGet(Some item, field)      -> check item
                 | FieldGet(None, _)               -> ()
+                | Var(_)                          -> ()
                 | _ -> raise (NotSupportedException(sprintf "Unsupported expression type: '%A'" (expr.Type)))
         check expr
         expr
@@ -80,24 +66,21 @@ module Reflection =
 
 [<RequireQualifiedAccess>]
 type NotifyChanged() =
-
     static let notifyFactoryCache =
-        let calcFunc (t, s, b) _ = Locator.Current.GetServices<ICreatesObservableForProperty>() 
-                                   |> Seq.maxBy(fun x -> x.GetAffinityForObject(t, s, b))
+        let calcFunc (t, s, b) _ = 
+            let services = Locator.Current.GetServices<ReactiveUI.FSharp.ICreatesObservableForProperty>() 
+            if (services |> Seq.isEmpty) then failwith ("Couldn't find a ICreatesObservableForProperty. This should never happen, your service locator is probably broken.")
+            services |> Seq.maxBy(fun x -> x.GetAffinityForObject(t, s, b))
         new MemoizingMRUCache<_,_>(Func<_,_,_>(calcFunc), RxApp.BigCacheLimit)
 
     static let notifyForProperty(sender : obj, expression : Expr, beforeChange : bool) : IObservable<IObservedChange<obj, obj>> =
         let result = lock notifyFactoryCache (fun () -> notifyFactoryCache.Get((sender.GetType(), (expression |> Expression.getName), beforeChange)))
-
-        if (result = null) then failwith (sprintf "Couldn't find a ICreatesObservableForProperty for %A. This should never happen, your service locator is probably broken." (sender.GetType()))
-            
         result.GetNotificationForProperty(sender, expression, beforeChange);
 
     static let observedChangeFor(expression : Expr, sourceChange : IObservedChange<obj, obj>) : IObservedChange<obj, obj> =
-        let propertyName = expression |> Expression.getName
-        if (sourceChange.Value = null) then new ObservedChange<obj, obj>(sourceChange.Value, expression) :> IObservedChange<obj, obj>
+        if (sourceChange.Value = null) then new ReactiveUI.FSharp.ObservedChange<obj, obj>(sourceChange.Value, expression) :> IObservedChange<obj, obj>
                                        else let value = Reflection.tryGetValueForPropertyChain(sourceChange.Value, [expression])
-                                            new ObservedChange<obj, obj>(sourceChange.Value, expression, value) :> IObservedChange<obj, obj>
+                                            new ReactiveUI.FSharp.ObservedChange<obj, obj>(sourceChange.Value, expression, value) :> IObservedChange<obj, obj>
 
     static let nestedObservedChanges(expression : Expr, sourceChange : IObservedChange<obj, obj>, beforeChange : bool) : IObservable<IObservedChange<obj, obj>> =
         // Make sure a change at a root node propogates events down
@@ -106,27 +89,32 @@ type NotifyChanged() =
         // Handle null values in the chain
         if (sourceChange.Value = null) then Observable.Return(kicker)
                                        else notifyForProperty(sourceChange.Value, expression, beforeChange).
-                                                Select(fun x -> ObservedChange(x.Sender, expression, x.GetValue()) :> IObservedChange<_,_>).
+                                                Select(fun x -> ReactiveUI.FSharp.ObservedChange(x.Sender, expression, x.GetValue()) :> IObservedChange<_,_>).
                                                 StartWith(kicker)
+
+    static do
+        // TODO - Hacky
+        let registrations = ReactiveUI.FSharp.Registrations() :> IWantsToRegisterStuff
+        registrations.Register(Action<Func<obj>,Type>(fun (f : Func<obj>) t -> Locator.CurrentMutable.RegisterConstant(f.Invoke(), t)))
 
     static member subscribeToExpressionChain(source : 'TSender, expression : Expr, ?beforeChange (* = false *), ?skipInitial (* = true *)) : IObservable<IObservedChange<'TSender, 'TValue>> =
         let beforeChange = defaultArg beforeChange false
         let skipInitial =  defaultArg skipInitial  true
         let (chain : Expr list) = expression |> Expression.rewrite |> Expression.getExpressionChain
 
-        let mutable notifier = Observable.Return(new ObservedChange<obj, obj>(null, expression, source) :> IObservedChange<_,_>)
+        let mutable notifier = Observable.Return(new ReactiveUI.FSharp.ObservedChange<obj, obj>(null, expression, source) :> IObservedChange<_,_>)
         notifier <- chain |> Seq.fold (fun n expr -> n.Select(fun y -> nestedObservedChanges(expr, y, beforeChange)).Switch()) notifier 
         if skipInitial then notifier <- notifier.Skip(1)
         notifier <- notifier.Where(fun x -> x.Sender <> null)
 
         let r = notifier.Select(fun x -> match x.GetValue() with
-                                         | :? 'TValue as value -> new ObservedChange<'TSender, 'TValue>(source, expression, value) :> IObservedChange<'TSender, 'TValue> 
-                                         | null                -> new ObservedChange<'TSender, 'TValue>(source, expression, null)  :> IObservedChange<'TSender, 'TValue>
+                                         | :? 'TValue as value -> new ReactiveUI.FSharp.ObservedChange<'TSender, 'TValue>(source, expression, value) :> IObservedChange<'TSender, 'TValue> 
+                                         | null                -> new ReactiveUI.FSharp.ObservedChange<'TSender, 'TValue>(source, expression, null)  :> IObservedChange<'TSender, 'TValue>
                                          | x -> raise (InvalidCastException(String.Format("Unable to cast from {0} to {1}.", x.GetType(), typeof<'TValue>))))
 
         r.DistinctUntilChanged(fun x -> x.Value)
 
-    static member forProperty (this : 'TSender, property : Expr<'TValue>, ?beforeChange (* = false *), ?skipInitial (* = true *)) =
+    static member forProperty (this : 'TSender, property : Expr<'TSender->'TValue>, ?beforeChange (* = false *), ?skipInitial (* = true *)) =
         if (this = null) then raise (ArgumentNullException("Sender"))
             
         (* x => x.Foo.Bar.Baz;
@@ -144,12 +132,13 @@ type NotifyChanged() =
          *  Resubscribe to new Baz, publish to Subject
          *)
 
-        NotifyChanged.subscribeToExpressionChain<'TSender, 'TValue>(
-            this,
-            property,
-            defaultArg beforeChange false,
-            defaultArg skipInitial true)
-        
+        match property with 
+        | Lambda(_, expr) -> NotifyChanged.subscribeToExpressionChain<'TSender, 'TValue>(
+                                this,
+                                expr,
+                                defaultArg beforeChange false,
+                                defaultArg skipInitial true)
+        | _               -> raise (ArgumentException(sprintf "Unsupported expression type %A" property.Type))
 
 #if false
     public static class ReactiveNotifyPropertyChangedMixin

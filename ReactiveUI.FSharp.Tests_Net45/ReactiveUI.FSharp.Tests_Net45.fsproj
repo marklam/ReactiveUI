@@ -5,10 +5,10 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>a927e69c-2a44-4fae-acdf-d4b83141ce57</ProjectGuid>
+    <ProjectGuid>{63e32157-0e53-4f24-8717-545bb86b65b8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>ReactiveUI.FSharp.Tests</RootNamespace>
-    <AssemblyName>ReactiveUI.FSharp.Tests</AssemblyName>
+    <AssemblyName>ReactiveUI.FSharp.Tests_Net45</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
     <Name>ReactiveUI.FSharp.Tests</Name>
@@ -91,6 +91,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.FSharp_Net45\ReactiveUI.FSharp_Net45.fsproj">
+      <Name>ReactiveUI.FSharp_Net45</Name>
+      <Project>{9bce9197-60d5-4c6b-bf0a-4a53869a2711}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Net45.csproj">
       <Name>ReactiveUI.Testing_Net45</Name>
       <Project>{dd99fd0f-82f6-4c30-930e-4a1d0df01d65}</Project>
