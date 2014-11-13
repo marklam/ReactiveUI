@@ -39,8 +39,11 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.Portable.FSharp.Targets" />
   <ItemGroup>
+    <Compile Include="ExpressionMixins.fs" />
+    <Compile Include="Reflection.fs" />
     <Compile Include="ICreatesObservableForProperty.fs" />
     <Compile Include="ObservedChange.fs" />
+    <Compile Include="ObservedChangedMixin.fs" />
     <Compile Include="POCOObservableForProperty.fs" />
     <Compile Include="IROObservableForProperty.fs" />
     <Compile Include="INPCObservableForProperty.fs" />

@@ -29,5 +29,5 @@ type IROObservableForProperty() =
                            | PropertyGet(_, info, xs) -> info.Name + "[]"
                            | _ -> raise (ArgumentException(sprintf "Unsupported expression type: '%A'" (expression.Type)))
                 obs.Where(fun x -> x.PropertyName.Equals(name)).
-                    Select(fun x -> new ReactiveUI.FSharp.ObservedChange<obj, obj>(sender, expression) :> IObservedChange<obj, obj>)
+                    Select(fun x -> FSObservedChange<obj, obj>(sender, expression) :> IObservedChange<obj, obj>)
             | _ -> raise (ArgumentException("Sender doesn't implement IReactiveObject"))

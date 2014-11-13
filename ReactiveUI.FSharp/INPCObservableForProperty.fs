@@ -34,8 +34,8 @@ type INPCObservableForProperty() =
             | true, Some before, _ ->
                 let obs = Observable.FromEventPattern<PropertyChangingEventHandler, PropertyChangingEventArgs>(before.PropertyChanging.AddHandler, before.PropertyChanging.RemoveHandler)
                 obs.Where(fun x -> x.EventArgs.PropertyName.Equals(name)).
-                    Select(fun x -> new ReactiveUI.FSharp.ObservedChange<obj, obj>(sender, expression) :> IObservedChange<obj, obj>)
+                    Select(fun x -> FSObservedChange<obj, obj>(sender, expression) :> IObservedChange<obj, obj>)
             | false, _, Some after ->
                 let obs = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(after.PropertyChanged.AddHandler, after.PropertyChanged.RemoveHandler)
                 obs.Where(fun x -> x.EventArgs.PropertyName.Equals(name)).
-                    Select(fun x -> new ReactiveUI.FSharp.ObservedChange<obj, obj>(sender, expression) :> IObservedChange<obj, obj>)
+                    Select(fun x -> FSObservedChange<obj, obj>(sender, expression) :> IObservedChange<obj, obj>)

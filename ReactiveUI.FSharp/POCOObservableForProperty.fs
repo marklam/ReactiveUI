@@ -22,5 +22,5 @@ type POCOObservableForProperty() =
             if not (hasWarned.Contains(``type``)) then this.Log().Warn(sprintf "%s is a POCO type and won't send change notifications, WhenAny will only return a single value!" (``type``.FullName))
                                                        hasWarned.Add(``type``) |> ignore
 
-            Observable.Return(new ReactiveUI.FSharp.ObservedChange<obj, obj>(sender, expression) :> IObservedChange<obj, obj>, RxApp.MainThreadScheduler)
+            Observable.Return(FSObservedChange<obj, obj>(sender, expression) :> IObservedChange<obj, obj>, RxApp.MainThreadScheduler)
                 .Concat(Observable.Never<IObservedChange<obj, obj>>())

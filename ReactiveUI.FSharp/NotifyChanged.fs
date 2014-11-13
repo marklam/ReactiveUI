@@ -11,58 +11,7 @@ open Splat
 // TODO - fewer explicit types
 // TODO - merge ICreatesObservableForProperty?
 
-// TODO - these Expression and Reflection bits seem overly complicated
-
-module Expression =
-    let getName (expr : Expr) = 
-        match expr with
-            | PropertyGet(_, prop, _) -> prop.Name
-            | FieldGet(_, field)      -> field.Name
-            | _ -> raise (NotSupportedException(sprintf "Unsupported expression type: '%A'" (expr.Type)))
-
-    let constantArg = function | Value(v, _) -> Some v | _ -> None 
-
-    let getArgumentsArray (expr : Expr) =
-        match expr with
-            | PropertyGet(_, _, args) -> args |> List.choose constantArg
-                                              |> Array.ofList 
-                                              |> Some
-            | _ -> None
-
-    let rec getExpressionChain (expr : Expr) = 
-        match expr with
-            | PropertyGet(Some item, prop, _) -> expr :: (getExpressionChain item)
-            | FieldGet(Some item, field)      -> expr :: (getExpressionChain item)
-            | _                               -> [expr]
-
-
-    let rewrite (expr : Expr) =
-        let rec check expr =
-            match expr with
-                | PropertyGet(Some item, _, args) -> args |> List.map constantArg |> List.iter(function | Some _ -> () | None -> raise (NotSupportedException("Indexers must have constant indexes"))); check item
-                | PropertyGet(None, _, args)      -> args |> List.map constantArg |> List.iter(function | Some _ -> () | None -> raise (NotSupportedException("Indexers must have constant indexes"))); ()
-                | FieldGet(Some item, field)      -> check item
-                | FieldGet(None, _)               -> ()
-                | Var(_)                          -> ()
-                | _ -> raise (NotSupportedException(sprintf "Unsupported expression type: '%A'" (expr.Type)))
-        check expr
-        expr
-
-module Reflection = 
-    let getValueFetcherOrThrow (memb : Expr) : (obj -> obj[] option -> obj) =
-        match memb with
-            | PropertyGet(_, prop, _) -> (fun o a -> prop.GetValue(o, defaultArg a null))
-            | FieldGet(_, field)      -> (fun o _ -> field.GetValue(o))
-            | _ -> raise (ArgumentException(sprintf "Type must have a property '%A'" memb))
-
-    let rec tryGetValueForPropertyChain(current : obj, expressionChain : Expr list) : (bool * 'TValue) =
-        match expressionChain with
-        | expression :: tail when current <> null -> let args  = expression |> Expression.getArgumentsArray
-                                                     tryGetValueForPropertyChain((getValueFetcherOrThrow(expression) current args), tail)
-        | [lastExpression]                        -> let args  = lastExpression |> Expression.getArgumentsArray 
-                                                     let value = getValueFetcherOrThrow (lastExpression) current args
-                                                     (true, value :?> 'TValue)
-        | _                                       -> (false, Unchecked.defaultof<'TValue>)
+open ObservedChangedMixin
 
 [<RequireQualifiedAccess>]
 type NotifyChanged() =
@@ -78,9 +27,9 @@ type NotifyChanged() =
         result.GetNotificationForProperty(sender, expression, beforeChange);
 
     static let observedChangeFor(expression : Expr, sourceChange : IObservedChange<obj, obj>) : IObservedChange<obj, obj> =
-        if (sourceChange.Value = null) then new ReactiveUI.FSharp.ObservedChange<obj, obj>(sourceChange.Value, expression) :> IObservedChange<obj, obj>
+        if (sourceChange.Value = null) then FSObservedChange<obj, obj>(sourceChange.Value, expression) :> IObservedChange<obj, obj>
                                        else let value = Reflection.tryGetValueForPropertyChain(sourceChange.Value, [expression])
-                                            new ReactiveUI.FSharp.ObservedChange<obj, obj>(sourceChange.Value, expression, value) :> IObservedChange<obj, obj>
+                                            FSObservedChange<obj, obj>(sourceChange.Value, expression, value) :> IObservedChange<obj, obj>
 
     static let nestedObservedChanges(expression : Expr, sourceChange : IObservedChange<obj, obj>, beforeChange : bool) : IObservable<IObservedChange<obj, obj>> =
         // Make sure a change at a root node propogates events down
@@ -89,11 +38,12 @@ type NotifyChanged() =
         // Handle null values in the chain
         if (sourceChange.Value = null) then Observable.Return(kicker)
                                        else notifyForProperty(sourceChange.Value, expression, beforeChange).
-                                                Select(fun x -> ReactiveUI.FSharp.ObservedChange(x.Sender, expression, x.GetValue()) :> IObservedChange<_,_>).
+                                                Select(fun x -> FSObservedChange(x.Sender, expression, x.GetValue()) :> IObservedChange<_,_>).
                                                 StartWith(kicker)
 
     static do
         // TODO - Hacky
+        // TODO - Remove internalsvisibleto from main library, use own registration container?
         let registrations = ReactiveUI.FSharp.Registrations() :> IWantsToRegisterStuff
         registrations.Register(Action<Func<obj>,Type>(fun (f : Func<obj>) t -> Locator.CurrentMutable.RegisterConstant(f.Invoke(), t)))
 
@@ -102,14 +52,14 @@ type NotifyChanged() =
         let skipInitial =  defaultArg skipInitial  true
         let (chain : Expr list) = expression |> Expression.rewrite |> Expression.getExpressionChain
 
-        let mutable notifier = Observable.Return(new ReactiveUI.FSharp.ObservedChange<obj, obj>(null, expression, source) :> IObservedChange<_,_>)
+        let mutable notifier = Observable.Return(FSObservedChange<obj, obj>(null, expression, source) :> IObservedChange<_,_>)
         notifier <- chain |> Seq.fold (fun n expr -> n.Select(fun y -> nestedObservedChanges(expr, y, beforeChange)).Switch()) notifier 
         if skipInitial then notifier <- notifier.Skip(1)
         notifier <- notifier.Where(fun x -> x.Sender <> null)
 
         let r = notifier.Select(fun x -> match x.GetValue() with
-                                         | :? 'TValue as value -> new ReactiveUI.FSharp.ObservedChange<'TSender, 'TValue>(source, expression, value) :> IObservedChange<'TSender, 'TValue> 
-                                         | null                -> new ReactiveUI.FSharp.ObservedChange<'TSender, 'TValue>(source, expression, null)  :> IObservedChange<'TSender, 'TValue>
+                                         | :? 'TValue as value -> FSObservedChange<'TSender, 'TValue>(source, expression, value) :> IObservedChange<'TSender, 'TValue> 
+                                         | null                -> FSObservedChange<'TSender, 'TValue>(source, expression, null)  :> IObservedChange<'TSender, 'TValue>
                                          | x -> raise (InvalidCastException(String.Format("Unable to cast from {0} to {1}.", x.GetType(), typeof<'TValue>))))
 
         r.DistinctUntilChanged(fun x -> x.Value)
