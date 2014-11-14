@@ -80,6 +80,9 @@
     <Compile Include="..\ReactiveUI.FSharp\NotifyChanged.fs">
       <Link>NotifyChanged.fs</Link>
     </Compile>
+    <Compile Include="..\ReactiveUI.FSharp\ReactiveNotifyPropertyChangedMixin.fs">
+      <Link>ReactiveNotifyPropertyChangedMixin.fs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

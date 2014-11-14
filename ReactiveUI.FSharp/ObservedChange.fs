@@ -15,7 +15,7 @@ type FSObservedChange<'TSender, 'TValue>(sender:'TSender, expression:Expr, ?valu
     /// false otherwise</returns>
     static member tryGetValue (this : FSObservedChange<'TSender, 'TValue>) =
         if not (obj.Equals(this.Value, Unchecked.defaultof<'TValue>))
-            then (true, this.Value)
+            then this.Value |> Some
             else Reflection.tryGetValueForPropertyChain(this.Sender, this.Expression |> Expression.getExpressionChain)
 
     /// <summary>
@@ -25,8 +25,8 @@ type FSObservedChange<'TSender, 'TValue>(sender:'TSender, expression:Expr, ?valu
     /// <returns>The current value of the property</returns>
     static member getValue (this : FSObservedChange<'TSender, 'TValue>) =
         match (this |> FSObservedChange.tryGetValue) with
-        | false, _  -> failwith (sprintf "One of the properties in the expression '%s' was null" (this.GetPropertyName()))
-        | true, ret -> ret
+        | None     -> failwith (sprintf "One of the properties in the expression '%s' was null" (this.GetPropertyName()))
+        | Some ret -> ret
 
     static member getPropertyName(this : FSObservedChange<'TSender, 'TValue>) =
         this.Expression |> Reflection.expressionToPropertyNames

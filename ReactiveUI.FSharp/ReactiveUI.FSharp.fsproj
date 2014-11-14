@@ -49,6 +49,7 @@
     <Compile Include="INPCObservableForProperty.fs" />
     <Compile Include="Registrations.fs" />
     <Compile Include="NotifyChanged.fs" />
+    <Compile Include="ReactiveNotifyPropertyChangedMixin.fs" />
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

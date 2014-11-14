@@ -99,7 +99,8 @@ namespace ReactiveUI
             IObservable<IObservedChange<object, object>> notifier = 
                 Observable.Return(new ObservedChange<object, object>(null, null, source));
 
-            IEnumerable<Expression> chain = Reflection.Rewrite(expression).GetExpressionChain();
+			var rw = Reflection.Rewrite(expression);
+            IEnumerable<Expression> chain = rw.GetExpressionChain();
             notifier = chain.Aggregate(notifier, (n, expr) => n
                 .Select(y => nestedObservedChanges(expr, y, beforeChange))
                 .Switch());

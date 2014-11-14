@@ -7,42 +7,89 @@ open Microsoft.FSharp.Quotations.Patterns
 // TODO - these Expression and Reflection bits seem overly complicated
 
 module Expression =
+    let private constantArg = function | Value(v, _) -> Some v | _ -> None 
+
     let getName (expr : Expr) = 
         match expr with
             | PropertyGet(_, prop, _) -> prop.Name
             | FieldGet(_, field)      -> field.Name
             | _ -> raise (NotSupportedException(sprintf "Unsupported expression type: '%A'" (expr.Type)))
 
-    let constantArg = function | Value(v, _) -> Some v | _ -> None 
-
-    let getArgumentsArray (expr : Expr) =
+    let GetArgumentsArray (expr : Expr) =
         match expr with
             | PropertyGet(_, _, args) -> args |> List.choose constantArg
                                               |> Array.ofList 
                                               |> Some
             | _ -> None
 
-    let getExpressionChain expr = 
+    let getArgumentsArray = GetArgumentsArray
+
+    let GetExpressionChain expr = 
         let rec buildChain (expr : Expr) =
             match expr with
-                | PropertyGet(Some item, _, _) -> expr :: (buildChain item)
-                | FieldGet(Some item, _)       -> expr :: (buildChain item)
-                | _                            -> [expr]
-        
+                | Var(_) -> []
+                | PropertyGet(Some item, prop, args) -> match item with 
+                                                        | Var(_) -> expr :: (buildChain item)
+                                                        | _      -> let rewritten = Expr.PropertyGet(Var("_", prop.DeclaringType) |> Expr.Var, prop, args)
+                                                                    rewritten :: (buildChain item)
+                | _ -> failwith "TODO"
+
         expr |> buildChain 
              |> List.rev 
-             |> List.tail
+             //|> List.tail
 
-    let rewrite (expr : Expr) =
-        let rec check expr =
-            match expr with
-                | PropertyGet(Some item, _, args) -> args |> List.map constantArg |> List.iter(function | Some _ -> () | None -> raise (NotSupportedException("Indexers must have constant indexes"))); check item
-                | PropertyGet(None, _, args)      -> args |> List.map constantArg |> List.iter(function | Some _ -> () | None -> raise (NotSupportedException("Indexers must have constant indexes"))); ()
-                | FieldGet(Some item, field)      -> check item
-                | FieldGet(None, _)               -> ()
-                | Var(_)                          -> ()
-                | _ -> raise (NotSupportedException(sprintf "Unsupported expression type: '%A'" (expr.Type)))
-        check expr
-        expr
+    let getExpressionChain = GetExpressionChain
 
+#if false 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public static MemberInfo GetMemberInfo(this Expression expression)
+        {
+            MemberInfo info = null;
+            switch (expression.NodeType) {
+            case ExpressionType.Index:
+                info = ((IndexExpression)expression).Indexer;
+                break;
+            case ExpressionType.MemberAccess:
+                info = ((MemberExpression)expression).Member;
+                break;
+            case ExpressionType.Convert:
+            case ExpressionType.ConvertChecked:
+                return GetMemberInfo(((UnaryExpression)expression).Operand);
+            default:
+                throw new NotSupportedException(string.Format("Unsupported expression type: '{0}'", expression.NodeType));
+            }
+
+            return info;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public static Expression GetParent(this Expression expression)
+        {
+            switch (expression.NodeType) {
+            case ExpressionType.Index:
+                return ((IndexExpression)expression).Object;
+            case ExpressionType.MemberAccess:
+                return ((MemberExpression)expression).Expression;
+            default:
+                throw new NotSupportedException(string.Format("Unsupported expression type: '{0}'", expression.NodeType));
+            }
+        }
+
+#endif
+
+    let rec rewrite (expr : Expr) =
+        match expr with
+            | Var(_)                             -> expr
+            | Lambda(_, expr)                    -> rewrite expr
+            | PropertyGet(Some item, prop, args) -> if (args |> List.map constantArg |> List.exists(Option.isNone)) then raise (NotSupportedException("Indexers must have constant indexes")) 
+                                                    Expr.PropertyGet(rewrite item, prop, args)
+            | _                                  -> raise (NotSupportedException(sprintf "Unsupported expression type: '%A'" (expr.Type)))
 

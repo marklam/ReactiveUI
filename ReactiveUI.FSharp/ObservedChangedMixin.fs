@@ -30,9 +30,9 @@ module ObservedChangedMixin =
         /// false otherwise</returns>
         member this.TryGetValue(changeValue : 'TValue byref) = 
             match this with 
-            | :? FSObservedChange<'TSender,'TValue> as change -> let (ret, value) = (change |> FSObservedChange.tryGetValue)
-                                                                 changeValue <- value
-                                                                 ret
+            | :? FSObservedChange<'TSender,'TValue> as change -> match (change |> FSObservedChange.tryGetValue) with
+                                                                 | Some value -> changeValue <- value;                        true
+                                                                 | None       -> changeValue <- Unchecked.defaultof<'TValue>; false
             | _ -> ReactiveUI.ObservedChangedMixin.TryGetValue(this, &changeValue)
 
         /// <summary>
@@ -44,40 +44,3 @@ module ObservedChangedMixin =
             match this with 
             | :? FSObservedChange<'TSender,'TValue> as change -> change |> FSObservedChange.getValue
             | _ -> ReactiveUI.ObservedChangedMixin.GetValue(this)
-  
-
-#if false
-    public static class ObservedChangedMixin
-    {
-
-        /// <summary>
-        /// Given a fully filled-out IObservedChange object, SetValueToProperty
-        /// will apply it to the specified object (i.e. it will ensure that
-        /// target.property == This.GetValue() and "replay" the observed change
-        /// onto another object)
-        /// </summary>
-        /// <param name="target">The target object to apply the change to.</param>
-        /// <param name="property">The target property to apply the change to.</param>
-        internal static void SetValueToProperty<TSender, TValue, TTarget>(
-            this IObservedChange<TSender, TValue> This, 
-            TTarget target,
-            Expression<Func<TTarget, TValue>> property)
-        {
-            Reflection.TrySetValueToPropertyChain(target, Reflection.Rewrite(property.Body).GetExpressionChain(), This.GetValue());
-        }
-
-        /// <summary>
-        /// Given a stream of notification changes, this method will convert 
-        /// the property changes to the current value of the property.
-        /// </summary>
-        /// <returns>An Observable representing the stream of current values of
-        /// the given change notification stream.</returns>
-        public static IObservable<TValue> Value<TSender, TValue>(
-		    this IObservable<IObservedChange<TSender, TValue>> This)
-        {
-            return This.Select(GetValue);
-        }
-    }
-
-
-#endif

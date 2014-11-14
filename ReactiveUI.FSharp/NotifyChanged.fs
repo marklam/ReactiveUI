@@ -13,6 +13,8 @@ open Splat
 
 open ObservedChangedMixin
 
+// TODO - some of these should be private
+
 [<RequireQualifiedAccess>]
 type NotifyChanged() =
     static let notifyFactoryCache =
@@ -28,8 +30,9 @@ type NotifyChanged() =
 
     static let observedChangeFor(expression : Expr, sourceChange : IObservedChange<obj, obj>) : IObservedChange<obj, obj> =
         if (sourceChange.Value = null) then FSObservedChange<obj, obj>(sourceChange.Value, expression) :> IObservedChange<obj, obj>
-                                       else let value = Reflection.tryGetValueForPropertyChain(sourceChange.Value, [expression])
-                                            FSObservedChange<obj, obj>(sourceChange.Value, expression, value) :> IObservedChange<obj, obj>
+                                       else match Reflection.tryGetValueForPropertyChain(sourceChange.Value, [expression]) with
+                                            | Some value -> FSObservedChange<obj, obj>(sourceChange.Value, expression, value) :> IObservedChange<obj, obj>
+                                            | None       -> failwith "TODO"
 
     static let nestedObservedChanges(expression : Expr, sourceChange : IObservedChange<obj, obj>, beforeChange : bool) : IObservable<IObservedChange<obj, obj>> =
         // Make sure a change at a root node propogates events down
