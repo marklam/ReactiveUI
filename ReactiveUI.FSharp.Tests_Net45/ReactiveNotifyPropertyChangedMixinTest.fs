@@ -224,45 +224,45 @@ type ReactiveNotifyPropertyChangedMixinTest() =
         checkChain <@ fun (x : HostTestFixture) -> x.Child.IsNotNullString @>      [ "Child"; "IsNotNullString" ]         [ typeof<TestFixture>; typeof<string> ]
         checkChain <@ fun (x : HostTestFixture) -> x.Child.Changed @>              [ "Child"; "Changed" ]                 [ typeof<TestFixture>; typeof<IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>> ]
 
-#if false
     [<Fact>]
     let WhenAnySmokeTest() =
         (new TestScheduler()).With(fun sched ->
             let fixture = new HostTestFixture(Child = new TestFixture())
-            fixture.SomeOtherParam = 5
+            fixture.SomeOtherParam <- 5
             fixture.Child.IsNotNullString <- "Foo"
 
             let output1 = ResizeArray<IObservedChange<HostTestFixture, int>>()
             let output2 = ResizeArray<IObservedChange<HostTestFixture, string>>()
-            fixture.WhenAny(<@ fun x -> x.SomeOtherParam @>, <@ fun x -> x.Child.IsNotNullString @>, id).Subscribe(fun (sop, nns) -> output1.Add(sop); output2.Add(nns))
+            fixture.WhenAnyX(<@ fun (x : HostTestFixture) -> x.SomeOtherParam @>, <@ fun (x : HostTestFixture) -> x.Child.IsNotNullString @>, id).Subscribe(fun (sop, nns) -> output1.Add(sop); output2.Add(nns)) |> ignore
 
             sched.Start()
             Assert.Equal(1, output1.Count)
             Assert.Equal(1, output2.Count)
-            Assert.Equal(fixture, output1[0].Sender)
-            Assert.Equal(fixture, output2[0].Sender)
-            Assert.Equal(5, output1[0].Value)
-            Assert.Equal("Foo", output2[0].Value)
+            Assert.Equal(fixture, output1.[0].Sender)
+            Assert.Equal(fixture, output2.[0].Sender)
+            Assert.Equal(5, output1.[0].Value)
+            Assert.Equal("Foo", output2.[0].Value)
 
-            fixture.SomeOtherParam = 10
+            fixture.SomeOtherParam <- 10
             sched.Start()
             Assert.Equal(2, output1.Count)
             Assert.Equal(2, output2.Count)
-            Assert.Equal(fixture, output1[1].Sender)
-            Assert.Equal(fixture, output2[1].Sender)
-            Assert.Equal(10, output1[1].Value)
-            Assert.Equal("Foo", output2[1].Value)
+            Assert.Equal(fixture, output1.[1].Sender)
+            Assert.Equal(fixture, output2.[1].Sender)
+            Assert.Equal(10, output1.[1].Value)
+            Assert.Equal("Foo", output2.[1].Value)
 
             fixture.Child.IsNotNullString <- "Bar"
             sched.Start()
             Assert.Equal(3, output1.Count)
             Assert.Equal(3, output2.Count)
-            Assert.Equal(fixture, output1[2].Sender)
-            Assert.Equal(fixture, output2[2].Sender)
-            Assert.Equal(10, output1[2].Value)
-            Assert.Equal("Bar", output2[2].Value)
+            Assert.Equal(fixture, output1.[2].Sender)
+            Assert.Equal(fixture, output2.[2].Sender)
+            Assert.Equal(10, output1.[2].Value)
+            Assert.Equal("Bar", output2.[2].Value)
         )
 
+#if false
     [<Fact>]
     let WhenAnyShouldWorkEvenWithNormalProperties() =
         let fixture = new TestFixture() { IsNotNullString <- "Foo", IsOnlyOneWord <- "Baz", PocoProperty <- "Bamf" }

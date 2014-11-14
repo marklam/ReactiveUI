@@ -12,7 +12,6 @@ module Expression =
     let getName (expr : Expr) = 
         match expr with
             | PropertyGet(_, prop, _) -> prop.Name
-            | FieldGet(_, field)      -> field.Name
             | _ -> raise (NotSupportedException(sprintf "Unsupported expression type: '%A'" (expr.Type)))
 
     let GetArgumentsArray (expr : Expr) =
@@ -27,16 +26,14 @@ module Expression =
     let GetExpressionChain expr = 
         let rec buildChain (expr : Expr) =
             match expr with
+                | PropertyGet(Some item, prop, args) -> (match item with | Var(_) -> expr 
+                                                                         | _      -> Expr.PropertyGet(Var("_", prop.DeclaringType) |> Expr.Var, prop, args))
+                                                        :: (buildChain item)
                 | Var(_) -> []
-                | PropertyGet(Some item, prop, args) -> match item with 
-                                                        | Var(_) -> expr :: (buildChain item)
-                                                        | _      -> let rewritten = Expr.PropertyGet(Var("_", prop.DeclaringType) |> Expr.Var, prop, args)
-                                                                    rewritten :: (buildChain item)
                 | _ -> failwith "TODO"
 
         expr |> buildChain 
              |> List.rev 
-             //|> List.tail
 
     let getExpressionChain = GetExpressionChain
 
