@@ -1,5 +1,6 @@
 ﻿namespace ReactiveUI.FSharp
 
+open System
 open System.Reactive.Linq
 open Microsoft.FSharp.Quotations
 open System.Runtime.CompilerServices
@@ -27,10 +28,10 @@ type WhenAnyMixin() =
         /// initial setup.
         /// </summary>
         [<Extension>]
-        static member inline WhenAnyX(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, selector : IObservedChange<'TSender, 'T1> * IObservedChange<'TSender, 'T2> -> 'TRet) =
-            Observable.CombineLatest(this.ObservableForProperty(property1, false, false), 
-                                     this.ObservableForProperty(property2, false, false), 
-                                     (fun (x, y) -> selector(x, y)))
+        static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, selector : IObservedChange<'TSender, 'T1> -> IObservedChange<'TSender, 'T2> -> 'TRet) =
+            System.Reactive.Linq.Observable.CombineLatest(this.ObservableForProperty(property1, false, false),
+                                                          this.ObservableForProperty(property2, false, false),
+                                                          Func<_,_,_>(selector))
 
 #if false
         /// <summary>
@@ -76,7 +77,7 @@ type WhenAnyMixin() =
                             return This.ObservableForProperty(property1, false, false).Select(selector); 
                     }
 
-		
+        
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -138,7 +139,7 @@ type WhenAnyMixin() =
             );
                     }
 
-		
+        
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -205,7 +206,7 @@ type WhenAnyMixin() =
             );
                     }
 
-		
+        
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -294,7 +295,7 @@ static member inline  WhenAny<'TSender, TRet, T1,T2,T3,T4>(this : 'TSender,
             );
                     }
 
-		
+        
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -390,7 +391,7 @@ static member inline  WhenAny<'TSender, TRet, T1,T2,T3,T4,T5>(this : 'TSender,
             );
                     }
 
-		
+        
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -493,7 +494,7 @@ static member inline  WhenAny<'TSender, TRet, T1,T2,T3,T4,T5,T6>(this : 'TSender
             );
                     }
 
-		
+        
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -603,7 +604,7 @@ static member inline  WhenAny<'TSender, TRet, T1,T2,T3,T4,T5,T6,T7>(this : 'TSen
             );
                     }
 
-		
+        
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -698,7 +699,7 @@ static member inline  WhenAny<'TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8>(this : 'T
             );
                     }
 
-		
+        
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -799,7 +800,7 @@ static member inline  WhenAny<'TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9>(this :
             );
                     }
 
-		
+        
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -906,7 +907,7 @@ static member inline  WhenAny<'TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(th
             );
                     }
 
-		
+        
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -1019,7 +1020,7 @@ static member inline  WhenAny<'TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11
             );
                     }
 
-		
+        
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -1138,7 +1139,7 @@ static member inline  WhenAny<'TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11
             );
                     }
 
-		
+        
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable

@@ -61,15 +61,14 @@ type NotifyChanged() =
         notifier <- notifier.Where(fun x -> x.Sender <> null)
 
         let r = notifier.Select(fun x -> match x.GetValue() with
-                                         | :? 'TValue as value -> FSObservedChange<'TSender, 'TValue>(source, expression, value) :> IObservedChange<'TSender, 'TValue> 
-                                         | null                -> FSObservedChange<'TSender, 'TValue>(source, expression, null)  :> IObservedChange<'TSender, 'TValue>
-                                         | x -> raise (InvalidCastException(String.Format("Unable to cast from {0} to {1}.", x.GetType(), typeof<'TValue>))))
+                                         | :? 'TValue as value -> FSObservedChange<'TSender, 'TValue>(source, expression, value)
+                                         | x when box x = null -> FSObservedChange<'TSender, 'TValue>(source, expression, Unchecked.defaultof<'TValue>)
+                                         | x -> raise (InvalidCastException(String.Format("Unable to cast from {0} to {1}.", x.GetType(), typeof<'TValue>)))
+                                         :> IObservedChange<'TSender, 'TValue>)
 
         r.DistinctUntilChanged(fun x -> x.Value)
 
-    static member forProperty (this : 'TSender, property : Expr<'TSender->'TValue>, ?beforeChange (* = false *), ?skipInitial (* = true *)) =
-        if (this = null) then raise (ArgumentNullException("Sender"))
-            
+    static member forProperty(this : 'TSender, property : Expr<'TSender->'TValue>, ?beforeChange (* = false *), ?skipInitial (* = true *)) =
         (* x => x.Foo.Bar.Baz;
          * 
          * Subscribe to This, look for Foo
