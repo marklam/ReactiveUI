@@ -33,7 +33,6 @@ type WhenAnyMixin() =
                                                           this.ObservableForProperty(property2, false, false),
                                                           Func<_,_,_>(selector))
 
-#if false
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of a
         /// property on an object has changed, providing an initial value when
@@ -42,13 +41,9 @@ type WhenAnyMixin() =
         /// need an initial setup.
         /// </summary>
         [<Extension>]
-        static member inline WhenAnyValue(this : 'TSender, Expression<Func<'TSender, TRet>> property1)
-        {
-            return This.WhenAny(property1, (IObservedChange<'TSender, TRet> c1) => c1.Value);
-        }
+        static member inline WhenAnyValue(this : 'TSender, property1 : Expr<'TSender -> 'TRet>) =
+            WhenAnyMixin.WhenAny(this, property1, fun (c1 : IObservedChange<'TSender, 'TRet>) -> c1.Value)
 
-                                                                
-        
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -57,13 +52,13 @@ type WhenAnyMixin() =
         /// need an initial setup.
         /// </summary>
         [<Extension>]
-        static member inline WhenAnyValue(this : 'TSender, Expression<Func<'TSender, T1>> property1, Func<T1, TRet> selector)
-        {
-            return This.WhenAny(property1,
-                                (c1) =>
-                                    selector(c1.Value));
-        }
+        static member inline WhenAnyValue(this : 'TSender, property1 : Expr<'TSender -> 'T1>, selector : 'T1 -> 'TRet) =
+            WhenAnyMixin.WhenAny(this, property1, fun c1 -> selector(c1.Value))
 
+#if false
+
+                                                                
+        
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -91,7 +86,7 @@ type WhenAnyMixin() =
                             return ReactiveNotifyPropertyChangedMixin
                     .SubscribeToExpressionChain<'TSender,object>(This, property1, false, false).Select(selector); 
                     }
-                                                            
+#endif                                                            
         
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
@@ -100,13 +95,9 @@ type WhenAnyMixin() =
         /// method in constructors to set up bindings between properties that also
         /// need an initial setup.
         /// </summary>
-        public static IObservable<Tuple<T1,T2>> WhenAnyValue<'TSender, T1,T2>(this : 'TSender, Expression<Func<'TSender, T1>> property1, Expression<Func<'TSender, T2>> property2)
-        {
-            return This.WhenAny(property1, property2,
-                                (c1, c2) =>
-                                    Tuple.Create(c1.Value, c2.Value));
-        }
-        
+        static member inline WhenAnyValue(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>) =
+            WhenAnyMixin.WhenAny(this, property1, property2, fun c1 c2 -> (c1.Value, c2.Value))
+
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -115,30 +106,10 @@ type WhenAnyMixin() =
         /// need an initial setup.
         /// </summary>
         [<Extension>]
-        static member inline  WhenAnyValue<'TSender, TRet, T1,T2>(this : 'TSender, Expression<Func<'TSender, T1>> property1, Expression<Func<'TSender, T2>> property2, Func<T1,T2, TRet> selector)
-        {
-            return This.WhenAny(property1, property2,
-                                (c1, c2) =>
-                                    selector(c1.Value, c2.Value));
-        }
+        static member inline WhenAnyValue(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, selector : 'T1 -> 'T2 -> 'TRet) =
+            WhenAnyMixin.WhenAny(this, property1, property2, fun c1 c2 -> selector (c1.Value) (c2.Value))
 
-        /// <summary>
-        /// WhenAny allows you to observe whenever one or more properties on an
-        /// object have changed, providing an initial value when the Observable
-        /// is set up, unlike ObservableForProperty(). Use this method in
-        /// constructors to set up bindings between properties that also need an
-        /// initial setup.
-        /// </summary>
-        [<Extension>]
-        static member inline  WhenAny<'TSender, TRet, T1,T2>(this : 'TSender, Expression<Func<'TSender, T1>> property1, Expression<Func<'TSender, T2>> property2, Func<IObservedChange<'TSender, T1>, IObservedChange<'TSender, T2>, TRet> selector)
-        {
-                        return Observable.CombineLatest(
-                                    This.ObservableForProperty(property1, false, false), 
-                                    This.ObservableForProperty(property2, false, false), 
-                                selector
-            );
-                    }
-
+#if false
         
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an

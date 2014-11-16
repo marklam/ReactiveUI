@@ -106,7 +106,6 @@ type ReactiveNotifyPropertyChangedMixinTest() =
             changes.Select(fun x -> x.Value).AssertAreEqual([| "Foo"; "Bar"; null; "Baz" |])
         )
 
-
     [<Fact>]
     let OFPReplacingTheHostWithNullThenSettingItBackShouldResubscribeTheObservable() =
         (new TestScheduler()).With(fun sched ->
@@ -176,7 +175,6 @@ type ReactiveNotifyPropertyChangedMixinTest() =
             Assert.Equal(3, changes.Count)
         )
 
-#if false
     [<Fact>]
     let AnyChangeInExpressionListTriggersUpdate() =
         let obj = new ObjChain1()
@@ -199,7 +197,6 @@ type ReactiveNotifyPropertyChangedMixinTest() =
         obsUpdated := false
         obj.Model <- new ObjChain2()
         Assert.True(!obsUpdated)
-#endif 
 
     [<Fact>]
     let SubscriptionToWhenAnyShouldReturnCurrentValue() =
@@ -262,70 +259,73 @@ type ReactiveNotifyPropertyChangedMixinTest() =
             Assert.Equal<string>("Bar", output2.[2].Value)
         )
 
-#if false
     [<Fact>]
     let WhenAnyShouldWorkEvenWithNormalProperties() =
-        let fixture = new TestFixture() { IsNotNullString <- "Foo", IsOnlyOneWord <- "Baz", PocoProperty <- "Bamf" }
+        let fixture = new TestFixture(IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf")
 
-        let output = new List<IObservedChange<TestFixture, string>>()
-        fixture.WhenAny(fun x -> x.PocoProperty, fun x -> x).Subscribe(output.Add)
-        let output2 = new List<string>()
-        fixture.WhenAnyValue(fun x -> x.PocoProperty).Subscribe(output2.Add)
-        let output3 = new List<IObservedChange<TestFixture, int?>>()
-        fixture.WhenAny(fun x -> x.NullableInt, fun x -> x).Subscribe(output3.Add)
+        let output = new ResizeArray<IObservedChange<TestFixture, string>>()
+        fixture.WhenAny(<@ fun (x : TestFixture) -> x.PocoProperty @>, fun x -> x).Subscribe(output.Add) |> ignore
+        let output2 = new ResizeArray<string>()
+        fixture.WhenAnyValue(<@ fun (x : TestFixture) -> x.PocoProperty @>).Subscribe(output2.Add) |> ignore
+        let output3 = new ResizeArray<IObservedChange<TestFixture, Nullable<int>>>()
+        fixture.WhenAny(<@ fun (x : TestFixture) -> x.NullableInt @>, fun x -> x).Subscribe(output3.Add) |> ignore
 
-        let output4 = new List<int?>()
-        fixture.WhenAnyValue(fun x -> x.NullableInt).Subscribe(output4.Add)
+        let output4 = new ResizeArray<Nullable<int>>()
+        fixture.WhenAnyValue(<@ fun (x : TestFixture) -> x.NullableInt @>).Subscribe(output4.Add) |> ignore
            
         Assert.Equal(1, output.Count)
-        Assert.Equal(fixture, output[0].Sender)
-        Assert.Equal("PocoProperty", output[0].GetPropertyName())
-        Assert.Equal("Bamf", output[0].Value)
+        Assert.Equal(fixture, output.[0].Sender)
+        Assert.Equal<string>("PocoProperty", output.[0].GetPropertyName())
+        Assert.Equal<string>("Bamf", output.[0].Value)
 
         Assert.Equal(1, output2.Count)
-        Assert.Equal("Bamf", output2[0])
+        Assert.Equal<string>("Bamf", output2.[0])
 
         Assert.Equal(1, output3.Count)
-        Assert.Equal(fixture, output3[0].Sender)
-        Assert.Equal("NullableInt", output3[0].GetPropertyName())
-        Assert.Equal(null, output3[0].Value)
+        Assert.Equal(fixture, output3.[0].Sender)
+        Assert.Equal<string>("NullableInt", output3.[0].GetPropertyName())
+        Assert.Null(output3.[0].Value)
 
         Assert.Equal(1, output4.Count)
-        Assert.Equal(null, output4[0])
+        Assert.Null(output4.[0])
 
     [<Fact>]
     let WhenAnyValueSmokeTest() =
         (new TestScheduler()).With(fun sched ->
             let fixture = new HostTestFixture(Child = new TestFixture())
-            fixture.SomeOtherParam = 5
+            fixture.SomeOtherParam <- 5
             fixture.Child.IsNotNullString <- "Foo"
 
-            let output1 = new List<int>()
-            let output2 = new List<string>()
-            fixture.WhenAnyValue(fun x -> x.SomeOtherParam, fun x -> x.Child.IsNotNullString, (sop, nns) => new {sop, nns}).Subscribe(fun x -> {
-                output1.Add(x.sop); output2.Add(x.nns)
-            })
-
+            let output1 = new ResizeArray<int>()
+            let output2 = new ResizeArray<string>()
+            fixture.WhenAnyValue(<@ fun (x : HostTestFixture) -> x.SomeOtherParam @>, 
+                                 <@ fun (x : HostTestFixture) -> x.Child.IsNotNullString @>, 
+                                 fun sop nns -> (sop, nns))
+                   .Subscribe(fun (sop, nns) -> output1.Add(sop); output2.Add(nns))
+                   |> ignore 
+                          
             sched.Start()
             Assert.Equal(1, output1.Count)
             Assert.Equal(1, output2.Count)
-            Assert.Equal(5, output1[0])
-            Assert.Equal("Foo", output2[0])
+            Assert.Equal(5, output1.[0])
+            Assert.Equal<string>("Foo", output2.[0])
 
-            fixture.SomeOtherParam = 10
+            fixture.SomeOtherParam <- 10
             sched.Start()
             Assert.Equal(2, output1.Count)
             Assert.Equal(2, output2.Count)
-            Assert.Equal(10, output1[1])
-            Assert.Equal("Foo", output2[1])
+            Assert.Equal(10, output1.[1])
+            Assert.Equal<string>("Foo", output2.[1])
 
             fixture.Child.IsNotNullString <- "Bar"
             sched.Start()
             Assert.Equal(3, output1.Count)
             Assert.Equal(3, output2.Count)
-            Assert.Equal(10, output1[2])
-            Assert.Equal("Bar", output2[2])
+            Assert.Equal(10, output1.[2])
+            Assert.Equal<string>("Bar", output2.[2])
         )
+
+#if false
 
     [<Fact>]
     let WhenAnyValueShouldWorkEvenWithNormalProperties() =
