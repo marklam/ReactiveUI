@@ -39,6 +39,7 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.Portable.FSharp.Targets" />
   <ItemGroup>
+    <None Include="GenerateCode.fsx" />
     <Compile Include="ExpressionMixins.fs" />
     <Compile Include="Reflection.fs" />
     <Compile Include="ICreatesObservableForProperty.fs" />
