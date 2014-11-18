@@ -325,41 +325,41 @@ type ReactiveNotifyPropertyChangedMixinTest() =
             Assert.Equal<string>("Bar", output2.[2])
         )
 
-#if false
+    // TODO - get rid of type specifiers in expression
 
     [<Fact>]
     let WhenAnyValueShouldWorkEvenWithNormalProperties() =
-        let fixture = new TestFixture() { IsNotNullString <- "Foo", IsOnlyOneWord <- "Baz", PocoProperty <- "Bamf" }
+        let fixture = new TestFixture(IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf")
 
-        let output1 = new List<string>()
-        let output2 = new List<int>()
-        fixture.WhenAnyValue(fun x -> x.PocoProperty).Subscribe(output1.Add)
-        fixture.WhenAnyValue(fun x -> x.IsOnlyOneWord, fun x -> x.Length).Subscribe(output2.Add)
+        let output1 = new ResizeArray<string>()
+        let output2 = new ResizeArray<int>()
+        fixture.WhenAnyValue(<@ fun (x : TestFixture) -> x.PocoProperty @>).Subscribe(output1.Add) |> ignore
+        fixture.WhenAnyValue(<@ fun (x : TestFixture) -> x.IsOnlyOneWord @>, 
+                             fun (x : string) -> x.Length).Subscribe(output2.Add) |> ignore
 
         Assert.Equal(1, output1.Count)
-        Assert.Equal("Bamf", output1[0])
+        Assert.Equal<string>("Bamf", output1.[0])
         Assert.Equal(1, output2.Count)
-        Assert.Equal(3, output2[0])
+        Assert.Equal(3, output2.[0])
 
     [<Fact>]
     let WhenAnyShouldRunInContext() =
         let tid = Thread.CurrentThread.ManagedThreadId
 
         (Scheduler.TaskPool).With(fun sched ->
-            int whenAnyTid = 0
-            let fixture = new TestFixture() { IsNotNullString <- "Foo", IsOnlyOneWord <- "Baz", PocoProperty <- "Bamf" }
+            let mutable whenAnyTid = 0
+            let fixture = new TestFixture(IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf")
 
-            fixture.WhenAnyValue(fun x -> x.IsNotNullString).Subscribe(fun x -> {
-                whenAnyTid = Thread.CurrentThread.ManagedThreadId
-            })
+            fixture.WhenAnyValue(fun x -> x.IsNotNullString).Subscribe(fun x -> 
+                whenAnyTid := Thread.CurrentThread.ManagedThreadId
+            )
 
-            int timeout = 10
+            let mutable timeout = 10
             fixture.IsNotNullString <- "Bar"
-            while (--timeout > 0 && whenAnyTid = 0) Thread.Sleep(250)
+            while (Interlocked.Decrement(timeout) > 0 && whenAnyTid = 0) do Thread.Sleep(250)
 
             Assert.Equal(tid, whenAnyTid)
         )
-#endif
 
     [<Fact>]
     let OFPNamedPropertyTest() =
