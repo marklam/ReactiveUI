@@ -1,8 +1,9 @@
 ﻿open System
 
-let spaces a b = a + " " + b
-let commas a b = a + ", " + b
-let arrows a b = a + " -> " + b
+let spaces     a b = a + " " + b
+let commas     a b = a + ", " + b
+let semicolons a b = a + "; " + b
+let arrows     a b = a + " -> " + b
 
 let maxFuncLength = 12
 
@@ -42,6 +43,12 @@ let typeDefinition = "[<Extension>]\r\ntype WhenAnyMixin() = \r\n" + whenAnyComm
         this.ObservableForProperty(property1, false, false).Select(selector) 
 """
 
+let typeDefinition2 = "[<Extension>]\r\ntype WhenAnyObservableMixin() =\r\n" + """
+    [<Extension>]
+    static member inline WhenAnyObservable(this : 'TSender, obs1 : Expr<'TSender -> IObservable<'TRet>>) =
+        WhenAnyMixin.WhenAny(this, obs1, fun x -> x.Value).Switch()
+"""
+
 let whenAnyDeclaration length =
     let paramIndex = seq { 1 .. length }
     let propertyParams = paramIndex |> Seq.map (fun x -> String.Format("property{0} : Expr<'TSender -> 'T{0}>", x))
@@ -77,8 +84,6 @@ let whenAnyValueSelector length =
                                     |> Seq.reduce commas
     let properties     = paramIndex |> Seq.map (fun x -> String.Format("property{0}", x))   
                                     |> Seq.reduce commas
-    let selectorParams = paramIndex |> Seq.map (fun x -> String.Format("(c{0} : IObservedChange<'TSender, 'T{0}>)", x)) 
-                                    |> Seq.reduce spaces
     let selectorType   =(paramIndex |> Seq.map (fun x -> String.Format("'T{0}", x))
                                     |> Seq.reduce arrows)
                                     + " -> 'TRet"
@@ -89,12 +94,32 @@ let whenAnyValueSelector length =
     let declaration    = "    [<Extension>]\r\n    static member inline WhenAnyValue(this : 'TSender, " + propertyParams + ", selector : " + selectorType + ") =\r\n"
     let body =           "        WhenAnyMixin.WhenAny(this, " + properties + ", fun " + selectorInParams + " -> selector " + selectorOutParams + ")\r\n\r\n"
     whenAnyValueComment + declaration + body
-// WhenAnyDynamic
 
-let output = new System.IO.StreamWriter(@"C:\Users\Mark\Documents\Visual Studio 2013\Projects\marklam_ReactiveUI\ReactiveUI.FSharp\WhenAnyMixin.fs")
+let whenAnyObsDeclaration length =
+    let paramIndex = seq { 1 .. length }
+    let observableParams = paramIndex |> Seq.map (fun x -> String.Format("obs{0} : Expr<'TSender -> IObservable<'TRet>>", x))
+                                      |> Seq.reduce commas
+    let observables      = paramIndex |> Seq.map (fun x -> String.Format("obs{0}", x))
+                                      |> Seq.reduce commas
+    let buildArrayParams = paramIndex |> Seq.map (fun x -> String.Format("o{0}", x))
+                                      |> Seq.reduce spaces
+    let arrayValues      = paramIndex |> Seq.map (fun x -> String.Format("o{0}.Value", x))
+                                      |> Seq.reduce semicolons
+                                      
+    let declaration =    "    [<Extension>]\r\n    static member inline WhenAnyObservable(this : 'TSender, " + observableParams + ") =\r\n"
+    let body =           "        WhenAnyMixin.WhenAny(this, " + observables + ", fun " + buildArrayParams + " -> [| " + arrayValues + " |]).Select(fun x -> x.Merge()).Switch()\r\n\r\n"
+    declaration + body
+
+
+
+let generatedFile = __SOURCE_DIRECTORY__ + "\\WhenAnyMixin.fs"
+let output = new System.IO.StreamWriter(generatedFile)
 output.Write intro
 output.Write typeDefinition
-seq { 2 .. maxFuncLength } |> Seq.map whenAnyDeclaration   |> Seq.iter output.Write
-seq { 1 .. maxFuncLength } |> Seq.map whenAnyValueTuple    |> Seq.iter output.Write
-seq { 2 .. maxFuncLength } |> Seq.map whenAnyValueSelector |> Seq.iter output.Write
+seq { 2 .. maxFuncLength } |> Seq.map whenAnyDeclaration    |> Seq.iter output.Write
+seq { 1 .. maxFuncLength } |> Seq.map whenAnyValueTuple     |> Seq.iter output.Write
+seq { 1 .. maxFuncLength } |> Seq.map whenAnyValueSelector  |> Seq.iter output.Write
+output.Write typeDefinition2
+seq { 2 .. maxFuncLength } |> Seq.map whenAnyObsDeclaration |> Seq.iter output.Write
+
 output.Close()

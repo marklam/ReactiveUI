@@ -10,6 +10,8 @@ open Xunit
 open ReactiveUI
 open ReactiveUI.FSharp
 open Microsoft.FSharp.Quotations
+open System.Threading
+open System.Reactive.Concurrency
 
 // TODO - version of these tests with F# syntax
 
@@ -346,19 +348,19 @@ type ReactiveNotifyPropertyChangedMixinTest() =
     let WhenAnyShouldRunInContext() =
         let tid = Thread.CurrentThread.ManagedThreadId
 
-        (Scheduler.TaskPool).With(fun sched ->
-            let mutable whenAnyTid = 0
+        (TaskPoolScheduler.Default).With(fun sched ->
+            let whenAnyTid = ref 0
             let fixture = new TestFixture(IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf")
 
-            fixture.WhenAnyValue(fun x -> x.IsNotNullString).Subscribe(fun x -> 
+            fixture.WhenAnyValue(<@ fun (x: TestFixture) -> x.IsNotNullString @>).Subscribe(fun x -> 
                 whenAnyTid := Thread.CurrentThread.ManagedThreadId
-            )
+            ) |> ignore
 
-            let mutable timeout = 10
+            let timeout = ref 10
             fixture.IsNotNullString <- "Bar"
-            while (Interlocked.Decrement(timeout) > 0 && whenAnyTid = 0) do Thread.Sleep(250)
+            while (Interlocked.Decrement(timeout) > 0 && !whenAnyTid = 0) do Thread.Sleep(250)
 
-            Assert.Equal(tid, whenAnyTid)
+            Assert.Equal(tid, !whenAnyTid)
         )
 
     [<Fact>]
@@ -455,94 +457,63 @@ type ReactiveNotifyPropertyChangedMixinTest() =
             changes.Select(fun x -> x.Value).AssertAreEqual([|  "Foo"; "Bar"; "Foo" |])
         )
 
+type WhenAnyObservableTests() =
 #if false
-public class WhenAnyObservableTests
-{
     [<Fact>]
-    public async Task WhenAnyObservableSmokeTest() =
-    {
+    let WhenAnyObservableSmokeTest() =
         let fixture = new TestWhenAnyObsViewModel()
 
-        let list = new List<int>()
-        fixture.WhenAnyObservable(fun x -> x.Command1, fun x -> x.Command2)
-                .Subscribe(fun x -> list.Add((int)x))
+        let list = new ResizeArray<int>()
+        fixture.WhenAnyObservable(<@ fun (x : TestWhenAnyObsViewModel) -> x.Command1 @>, <@ fun (x : TestWhenAnyObsViewModel) -> x.Command2 @>)
+                .Subscribe(fun x -> list.Add((int)x)) |> ignore
 
         Assert.Equal(0, list.Count)
-
-        await fixture.Command1.ExecuteAsync(1)
+        
+        fixture.Command1.Execute(1)
         Assert.Equal(1, list.Count)
 
-        await fixture.Command2.ExecuteAsync(2)
+        fixture.Command2.Execute(2)
         Assert.Equal(2, list.Count)
 
-        await fixture.Command1.ExecuteAsync(1)
+        fixture.Command1.Execute(1)
         Assert.Equal(3, list.Count)
 
-        Assert.True(
-            [| 1, 2, 1,}.Zip(list, (expected, actual) => new {expected, actual})
-                            .All(fun x -> x.expected = x.actual))
-    }
+        Assert.Equal([| 1; 2; 1 |], list)
+#endif
 
     [<Fact>]
     let WhenAnyWithNullObjectShouldUpdateWhenObjectIsntNullAnymore() =
-    {
         let fixture = new TestWhenAnyObsViewModel()
-        let output = fixture.WhenAnyObservable(fun x -> x.MyListOfInts.CountChanged).CreateCollection()
+        let output = fixture.WhenAnyObservable(<@ fun (x : TestWhenAnyObsViewModel) -> x.MyListOfInts.CountChanged @>).CreateCollection()
 
         Assert.Equal(0, output.Count)
 
-        fixture.MyListOfInts = new ReactiveList<int>()
+        fixture.MyListOfInts <- new ReactiveList<int>()
         Assert.Equal(0, output.Count)
 
         fixture.MyListOfInts.Add(1)
         Assert.Equal(1, output.Count)
 
-        fixture.MyListOfInts = null
+        fixture.MyListOfInts <- null
         Assert.Equal(1, output.Count)
-    }
-}
-
-//#if !MONO
-public class HostTestView : Control, IViewFor<HostTestFixture>
-{
-    public HostTestFixture ViewModel {
-        get { return (HostTestFixture)GetValue(ViewModelProperty); }
-        set { SetValue(ViewModelProperty, value); }
-    }
-    public static readonly DependencyProperty ViewModelProperty =
-        DependencyProperty.Register("ViewModel", typeof(HostTestFixture), typeof(HostTestView), new PropertyMetadata(null))
-
-    object IViewFor.ViewModel {
-        get { return ViewModel; }
-        set { ViewModel = (HostTestFixture) value; }
-    }
-}
-
-public class WhenAnyThroughDependencyObjectTests
-{
+    
+type WhenAnyThroughDependencyObjectTests() =
     [<Fact>]
     let WhenAnyThroughAViewShouldntGiveNullValues() =
-    {
-        let vm = new HostTestFixture() {
-            Child = new TestFixture() {IsNotNullString <- "Foo", IsOnlyOneWord <- "Baz", PocoProperty <- "Bamf"},
-        }
+        let vm = HostTestFixture(Child = TestFixture(IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf"))
 
         let fixture = new HostTestView()
 
-        let output = new List<string>()
+        let output = new ResizeArray<string>()
 
         Assert.Equal(0, output.Count)
         Assert.Null(fixture.ViewModel)
 
-        fixture.WhenAnyValue(fun x -> x.ViewModel.Child.IsNotNullString).Subscribe(output.Add)
+        fixture.WhenAnyValue(<@ fun (x : HostTestView) -> x.ViewModel.Child.IsNotNullString @>).Subscribe(output.Add) |> ignore
 
-        fixture.ViewModel = vm
+        fixture.ViewModel <- vm
         Assert.Equal(1, output.Count)
 
         fixture.ViewModel.Child.IsNotNullString <- "Bar"
         Assert.Equal(2, output.Count)
-        [|  "Foo", "Bar" }.AssertAreEqual(output)
-    }
-}
-#endif
-
+        [| "Foo"; "Bar" |] .AssertAreEqual(output)
