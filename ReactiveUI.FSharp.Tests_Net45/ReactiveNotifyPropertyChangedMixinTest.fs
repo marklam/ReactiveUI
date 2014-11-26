@@ -458,14 +458,13 @@ type ReactiveNotifyPropertyChangedMixinTest() =
         )
 
 type WhenAnyObservableTests() =
-#if false
     [<Fact>]
     let WhenAnyObservableSmokeTest() =
         let fixture = new TestWhenAnyObsViewModel()
 
         let list = new ResizeArray<int>()
         fixture.WhenAnyObservable(<@ fun (x : TestWhenAnyObsViewModel) -> x.Command1 @>, <@ fun (x : TestWhenAnyObsViewModel) -> x.Command2 @>)
-                .Subscribe(fun x -> list.Add((int)x)) |> ignore
+               .Subscribe(fun x -> list.Add(x :?> int)) |> ignore
 
         Assert.Equal(0, list.Count)
         
@@ -479,7 +478,6 @@ type WhenAnyObservableTests() =
         Assert.Equal(3, list.Count)
 
         Assert.Equal([| 1; 2; 1 |], list)
-#endif
 
     [<Fact>]
     let WhenAnyWithNullObjectShouldUpdateWhenObjectIsntNullAnymore() =

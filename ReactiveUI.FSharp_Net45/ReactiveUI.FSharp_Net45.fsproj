@@ -74,9 +74,8 @@
     <Compile Include="..\ReactiveUI.FSharp\INPCObservableForProperty.fs">
       <Link>INPCObservableForProperty.fs</Link>
     </Compile>
-    <Compile Include="..\ReactiveUI.FSharp\Registrations.fs">
-      <Link>Registrations.fs</Link>
-    </Compile>
+    <Compile Include="WpfDependencyObjectObservableForProperty.fs" />
+    <Compile Include="Registrations.fs" />
     <Compile Include="..\ReactiveUI.FSharp\NotifyChanged.fs">
       <Link>NotifyChanged.fs</Link>
     </Compile>

@@ -97,13 +97,13 @@ let whenAnyValueSelector length =
 
 let whenAnyObsDeclaration length =
     let paramIndex = seq { 1 .. length }
-    let observableParams = paramIndex |> Seq.map (fun x -> String.Format("obs{0} : Expr<'TSender -> IObservable<'TRet>>", x))
+    let observableParams = paramIndex |> Seq.map (fun x -> String.Format("obs{0} : Expr<'TSender -> #IObservable<'TRet>>", x))
                                       |> Seq.reduce commas
     let observables      = paramIndex |> Seq.map (fun x -> String.Format("obs{0}", x))
                                       |> Seq.reduce commas
     let buildArrayParams = paramIndex |> Seq.map (fun x -> String.Format("o{0}", x))
                                       |> Seq.reduce spaces
-    let arrayValues      = paramIndex |> Seq.map (fun x -> String.Format("o{0}.Value", x))
+    let arrayValues      = paramIndex |> Seq.map (fun x -> String.Format("o{0}.Value :> IObservable<'TRet>", x))
                                       |> Seq.reduce semicolons
                                       
     let declaration =    "    [<Extension>]\r\n    static member inline WhenAnyObservable(this : 'TSender, " + observableParams + ") =\r\n"

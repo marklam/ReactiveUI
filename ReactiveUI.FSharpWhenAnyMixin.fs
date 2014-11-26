@@ -1,4 +1,4 @@
-﻿
+
 namespace ReactiveUI.FSharp
 
 open System
@@ -439,54 +439,4 @@ type WhenAnyMixin() =
     [<Extension>]
     static member inline WhenAnyValue(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>, property8 : Expr<'TSender -> 'T8>, property9 : Expr<'TSender -> 'T9>, property10 : Expr<'TSender -> 'T10>, property11 : Expr<'TSender -> 'T11>, property12 : Expr<'TSender -> 'T12>, selector : 'T1 -> 'T2 -> 'T3 -> 'T4 -> 'T5 -> 'T6 -> 'T7 -> 'T8 -> 'T9 -> 'T10 -> 'T11 -> 'T12 -> 'TRet) =
         WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, property5, property6, property7, property8, property9, property10, property11, property12, fun c1 c2 c3 c4 c5 c6 c7 c8 c9 c10 c11 c12 -> selector (c1.Value) (c2.Value) (c3.Value) (c4.Value) (c5.Value) (c6.Value) (c7.Value) (c8.Value) (c9.Value) (c10.Value) (c11.Value) (c12.Value))
-
-[<Extension>]
-type WhenAnyObservableMixin() =
-
-    [<Extension>]
-    static member inline WhenAnyObservable(this : 'TSender, obs1 : Expr<'TSender -> IObservable<'TRet>>) =
-        WhenAnyMixin.WhenAny(this, obs1, fun x -> x.Value).Switch()
-    [<Extension>]
-    static member inline WhenAnyObservable(this : 'TSender, obs1 : Expr<'TSender -> #IObservable<'TRet>>, obs2 : Expr<'TSender -> #IObservable<'TRet>>) =
-        WhenAnyMixin.WhenAny(this, obs1, obs2, fun o1 o2 -> [| o1.Value :> IObservable<'TRet>; o2.Value :> IObservable<'TRet> |]).Select(fun x -> x.Merge()).Switch()
-
-    [<Extension>]
-    static member inline WhenAnyObservable(this : 'TSender, obs1 : Expr<'TSender -> #IObservable<'TRet>>, obs2 : Expr<'TSender -> #IObservable<'TRet>>, obs3 : Expr<'TSender -> #IObservable<'TRet>>) =
-        WhenAnyMixin.WhenAny(this, obs1, obs2, obs3, fun o1 o2 o3 -> [| o1.Value :> IObservable<'TRet>; o2.Value :> IObservable<'TRet>; o3.Value :> IObservable<'TRet> |]).Select(fun x -> x.Merge()).Switch()
-
-    [<Extension>]
-    static member inline WhenAnyObservable(this : 'TSender, obs1 : Expr<'TSender -> #IObservable<'TRet>>, obs2 : Expr<'TSender -> #IObservable<'TRet>>, obs3 : Expr<'TSender -> #IObservable<'TRet>>, obs4 : Expr<'TSender -> #IObservable<'TRet>>) =
-        WhenAnyMixin.WhenAny(this, obs1, obs2, obs3, obs4, fun o1 o2 o3 o4 -> [| o1.Value :> IObservable<'TRet>; o2.Value :> IObservable<'TRet>; o3.Value :> IObservable<'TRet>; o4.Value :> IObservable<'TRet> |]).Select(fun x -> x.Merge()).Switch()
-
-    [<Extension>]
-    static member inline WhenAnyObservable(this : 'TSender, obs1 : Expr<'TSender -> #IObservable<'TRet>>, obs2 : Expr<'TSender -> #IObservable<'TRet>>, obs3 : Expr<'TSender -> #IObservable<'TRet>>, obs4 : Expr<'TSender -> #IObservable<'TRet>>, obs5 : Expr<'TSender -> #IObservable<'TRet>>) =
-        WhenAnyMixin.WhenAny(this, obs1, obs2, obs3, obs4, obs5, fun o1 o2 o3 o4 o5 -> [| o1.Value :> IObservable<'TRet>; o2.Value :> IObservable<'TRet>; o3.Value :> IObservable<'TRet>; o4.Value :> IObservable<'TRet>; o5.Value :> IObservable<'TRet> |]).Select(fun x -> x.Merge()).Switch()
-
-    [<Extension>]
-    static member inline WhenAnyObservable(this : 'TSender, obs1 : Expr<'TSender -> #IObservable<'TRet>>, obs2 : Expr<'TSender -> #IObservable<'TRet>>, obs3 : Expr<'TSender -> #IObservable<'TRet>>, obs4 : Expr<'TSender -> #IObservable<'TRet>>, obs5 : Expr<'TSender -> #IObservable<'TRet>>, obs6 : Expr<'TSender -> #IObservable<'TRet>>) =
-        WhenAnyMixin.WhenAny(this, obs1, obs2, obs3, obs4, obs5, obs6, fun o1 o2 o3 o4 o5 o6 -> [| o1.Value :> IObservable<'TRet>; o2.Value :> IObservable<'TRet>; o3.Value :> IObservable<'TRet>; o4.Value :> IObservable<'TRet>; o5.Value :> IObservable<'TRet>; o6.Value :> IObservable<'TRet> |]).Select(fun x -> x.Merge()).Switch()
-
-    [<Extension>]
-    static member inline WhenAnyObservable(this : 'TSender, obs1 : Expr<'TSender -> #IObservable<'TRet>>, obs2 : Expr<'TSender -> #IObservable<'TRet>>, obs3 : Expr<'TSender -> #IObservable<'TRet>>, obs4 : Expr<'TSender -> #IObservable<'TRet>>, obs5 : Expr<'TSender -> #IObservable<'TRet>>, obs6 : Expr<'TSender -> #IObservable<'TRet>>, obs7 : Expr<'TSender -> #IObservable<'TRet>>) =
-        WhenAnyMixin.WhenAny(this, obs1, obs2, obs3, obs4, obs5, obs6, obs7, fun o1 o2 o3 o4 o5 o6 o7 -> [| o1.Value :> IObservable<'TRet>; o2.Value :> IObservable<'TRet>; o3.Value :> IObservable<'TRet>; o4.Value :> IObservable<'TRet>; o5.Value :> IObservable<'TRet>; o6.Value :> IObservable<'TRet>; o7.Value :> IObservable<'TRet> |]).Select(fun x -> x.Merge()).Switch()
-
-    [<Extension>]
-    static member inline WhenAnyObservable(this : 'TSender, obs1 : Expr<'TSender -> #IObservable<'TRet>>, obs2 : Expr<'TSender -> #IObservable<'TRet>>, obs3 : Expr<'TSender -> #IObservable<'TRet>>, obs4 : Expr<'TSender -> #IObservable<'TRet>>, obs5 : Expr<'TSender -> #IObservable<'TRet>>, obs6 : Expr<'TSender -> #IObservable<'TRet>>, obs7 : Expr<'TSender -> #IObservable<'TRet>>, obs8 : Expr<'TSender -> #IObservable<'TRet>>) =
-        WhenAnyMixin.WhenAny(this, obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, fun o1 o2 o3 o4 o5 o6 o7 o8 -> [| o1.Value :> IObservable<'TRet>; o2.Value :> IObservable<'TRet>; o3.Value :> IObservable<'TRet>; o4.Value :> IObservable<'TRet>; o5.Value :> IObservable<'TRet>; o6.Value :> IObservable<'TRet>; o7.Value :> IObservable<'TRet>; o8.Value :> IObservable<'TRet> |]).Select(fun x -> x.Merge()).Switch()
-
-    [<Extension>]
-    static member inline WhenAnyObservable(this : 'TSender, obs1 : Expr<'TSender -> #IObservable<'TRet>>, obs2 : Expr<'TSender -> #IObservable<'TRet>>, obs3 : Expr<'TSender -> #IObservable<'TRet>>, obs4 : Expr<'TSender -> #IObservable<'TRet>>, obs5 : Expr<'TSender -> #IObservable<'TRet>>, obs6 : Expr<'TSender -> #IObservable<'TRet>>, obs7 : Expr<'TSender -> #IObservable<'TRet>>, obs8 : Expr<'TSender -> #IObservable<'TRet>>, obs9 : Expr<'TSender -> #IObservable<'TRet>>) =
-        WhenAnyMixin.WhenAny(this, obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, fun o1 o2 o3 o4 o5 o6 o7 o8 o9 -> [| o1.Value :> IObservable<'TRet>; o2.Value :> IObservable<'TRet>; o3.Value :> IObservable<'TRet>; o4.Value :> IObservable<'TRet>; o5.Value :> IObservable<'TRet>; o6.Value :> IObservable<'TRet>; o7.Value :> IObservable<'TRet>; o8.Value :> IObservable<'TRet>; o9.Value :> IObservable<'TRet> |]).Select(fun x -> x.Merge()).Switch()
-
-    [<Extension>]
-    static member inline WhenAnyObservable(this : 'TSender, obs1 : Expr<'TSender -> #IObservable<'TRet>>, obs2 : Expr<'TSender -> #IObservable<'TRet>>, obs3 : Expr<'TSender -> #IObservable<'TRet>>, obs4 : Expr<'TSender -> #IObservable<'TRet>>, obs5 : Expr<'TSender -> #IObservable<'TRet>>, obs6 : Expr<'TSender -> #IObservable<'TRet>>, obs7 : Expr<'TSender -> #IObservable<'TRet>>, obs8 : Expr<'TSender -> #IObservable<'TRet>>, obs9 : Expr<'TSender -> #IObservable<'TRet>>, obs10 : Expr<'TSender -> #IObservable<'TRet>>) =
-        WhenAnyMixin.WhenAny(this, obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, obs10, fun o1 o2 o3 o4 o5 o6 o7 o8 o9 o10 -> [| o1.Value :> IObservable<'TRet>; o2.Value :> IObservable<'TRet>; o3.Value :> IObservable<'TRet>; o4.Value :> IObservable<'TRet>; o5.Value :> IObservable<'TRet>; o6.Value :> IObservable<'TRet>; o7.Value :> IObservable<'TRet>; o8.Value :> IObservable<'TRet>; o9.Value :> IObservable<'TRet>; o10.Value :> IObservable<'TRet> |]).Select(fun x -> x.Merge()).Switch()
-
-    [<Extension>]
-    static member inline WhenAnyObservable(this : 'TSender, obs1 : Expr<'TSender -> #IObservable<'TRet>>, obs2 : Expr<'TSender -> #IObservable<'TRet>>, obs3 : Expr<'TSender -> #IObservable<'TRet>>, obs4 : Expr<'TSender -> #IObservable<'TRet>>, obs5 : Expr<'TSender -> #IObservable<'TRet>>, obs6 : Expr<'TSender -> #IObservable<'TRet>>, obs7 : Expr<'TSender -> #IObservable<'TRet>>, obs8 : Expr<'TSender -> #IObservable<'TRet>>, obs9 : Expr<'TSender -> #IObservable<'TRet>>, obs10 : Expr<'TSender -> #IObservable<'TRet>>, obs11 : Expr<'TSender -> #IObservable<'TRet>>) =
-        WhenAnyMixin.WhenAny(this, obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, obs10, obs11, fun o1 o2 o3 o4 o5 o6 o7 o8 o9 o10 o11 -> [| o1.Value :> IObservable<'TRet>; o2.Value :> IObservable<'TRet>; o3.Value :> IObservable<'TRet>; o4.Value :> IObservable<'TRet>; o5.Value :> IObservable<'TRet>; o6.Value :> IObservable<'TRet>; o7.Value :> IObservable<'TRet>; o8.Value :> IObservable<'TRet>; o9.Value :> IObservable<'TRet>; o10.Value :> IObservable<'TRet>; o11.Value :> IObservable<'TRet> |]).Select(fun x -> x.Merge()).Switch()
-
-    [<Extension>]
-    static member inline WhenAnyObservable(this : 'TSender, obs1 : Expr<'TSender -> #IObservable<'TRet>>, obs2 : Expr<'TSender -> #IObservable<'TRet>>, obs3 : Expr<'TSender -> #IObservable<'TRet>>, obs4 : Expr<'TSender -> #IObservable<'TRet>>, obs5 : Expr<'TSender -> #IObservable<'TRet>>, obs6 : Expr<'TSender -> #IObservable<'TRet>>, obs7 : Expr<'TSender -> #IObservable<'TRet>>, obs8 : Expr<'TSender -> #IObservable<'TRet>>, obs9 : Expr<'TSender -> #IObservable<'TRet>>, obs10 : Expr<'TSender -> #IObservable<'TRet>>, obs11 : Expr<'TSender -> #IObservable<'TRet>>, obs12 : Expr<'TSender -> #IObservable<'TRet>>) =
-        WhenAnyMixin.WhenAny(this, obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, obs10, obs11, obs12, fun o1 o2 o3 o4 o5 o6 o7 o8 o9 o10 o11 o12 -> [| o1.Value :> IObservable<'TRet>; o2.Value :> IObservable<'TRet>; o3.Value :> IObservable<'TRet>; o4.Value :> IObservable<'TRet>; o5.Value :> IObservable<'TRet>; o6.Value :> IObservable<'TRet>; o7.Value :> IObservable<'TRet>; o8.Value :> IObservable<'TRet>; o9.Value :> IObservable<'TRet>; o10.Value :> IObservable<'TRet>; o11.Value :> IObservable<'TRet>; o12.Value :> IObservable<'TRet> |]).Select(fun x -> x.Merge()).Switch()
 
