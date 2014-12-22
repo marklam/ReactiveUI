@@ -7,13 +7,6 @@ open Microsoft.FSharp.Quotations.Patterns
 open ReactiveUI
 open Splat
 
-// TODO - fewer explicit types
-// TODO - merge ICreatesObservableForProperty?
-
-open ObservedChangedMixin
-
-// TODO - some of these should be private
-
 [<RequireQualifiedAccess>]
 type NotifyChanged() =
     static let notifyFactoryCache =
@@ -25,7 +18,7 @@ type NotifyChanged() =
 
     static let notifyForProperty(sender : obj, expression : Expr, beforeChange : bool) : IObservable<IObservedChange<obj, obj>> =
         let result = lock notifyFactoryCache (fun () -> notifyFactoryCache.Get((sender.GetType(), (expression |> Expression.getName), beforeChange)))
-        result.GetNotificationForProperty(sender, expression, beforeChange);
+        result.GetNotificationForProperty(sender, expression, beforeChange)
 
     static let observedChangeFor(expression : Expr, sourceChange : IObservedChange<obj, obj>) : IObservedChange<obj, obj> =
         if (sourceChange.Value = null) then FSObservedChange<obj, obj>(sourceChange.Value, expression) :> IObservedChange<obj, obj>
@@ -44,8 +37,6 @@ type NotifyChanged() =
                                                 StartWith(kicker)
 
     static do
-        // TODO - Hacky
-        // TODO - Remove internalsvisibleto from main library, use own registration container?
         RxApp.EnsureInitialized()
         let registrations = ReactiveUI.FSharp.Registrations() :> IWantsToRegisterStuff
         registrations.Register(Action<Func<obj>,Type>(fun (f : Func<obj>) t -> Locator.CurrentMutable.RegisterConstant(f.Invoke(), t)))

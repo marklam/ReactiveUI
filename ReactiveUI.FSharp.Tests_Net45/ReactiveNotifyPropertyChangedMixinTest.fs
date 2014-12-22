@@ -13,8 +13,6 @@ open Microsoft.FSharp.Quotations
 open System.Threading
 open System.Reactive.Concurrency
 
-// TODO - version of these tests with F# syntax
-
 type ReactiveNotifyPropertyChangedMixinTest() =
     [<Fact>]
     let OFPSimplePropertyTest() =
@@ -215,7 +213,7 @@ type ReactiveNotifyPropertyChangedMixinTest() =
     [<Fact>]
     let MultiPropertyExpressionsShouldBeProperlyResolved() =
         let checkChain expr (properties : string list) (types : Type list) =
-            let chain = expr |> Reflection.Rewrite |> Expression.getExpressionChain
+            let chain = expr |> Expression.rewrite |> Expression.getExpressionChain
             properties.AssertAreEqual(chain |> List.map(Expression.getName))
             types.AssertAreEqual(chain |> List.map(fun y -> y.Type))
         checkChain <@ fun (x : HostTestFixture) -> x.Child.IsOnlyOneWord.Length @> [ "Child"; "IsOnlyOneWord"; "Length" ] [ typeof<TestFixture>; typeof<string>; typeof<int> ]
@@ -326,8 +324,6 @@ type ReactiveNotifyPropertyChangedMixinTest() =
             Assert.Equal(10, output1.[2])
             Assert.Equal<string>("Bar", output2.[2])
         )
-
-    // TODO - get rid of type specifiers in expression
 
     [<Fact>]
     let WhenAnyValueShouldWorkEvenWithNormalProperties() =

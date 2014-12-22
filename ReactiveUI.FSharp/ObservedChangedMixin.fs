@@ -3,7 +3,6 @@
 open ReactiveUI
 
 // TODO - test all public API
-// TODO - check extensions vs modules vs static members
 // TODO - FSObservedChange internal?
 
 [<AutoOpen>]

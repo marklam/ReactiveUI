@@ -12,69 +12,37 @@ module Expression =
             | PropertyGet(_, prop, _) -> prop.Name
             | _ -> raise (NotSupportedException(sprintf "Unsupported expression type: '%A'" (expr.Type)))
 
-    let GetArgumentsArray (expr : Expr) =
+    [<CompiledName("GetArgumentsArray")>]
+    let getArgumentsArray (expr : Expr) =
         match expr with
             | PropertyGet(_, _, args) -> args |> List.choose constantArg
                                               |> Array.ofList 
                                               |> Some
             | _ -> None
 
-    let getArgumentsArray = GetArgumentsArray
-
-    let GetExpressionChain expr = 
+    [<CompiledName("GetExpressionChain")>]
+    let getExpressionChain expr = 
         let rec buildChain (expr : Expr) =
             match expr with
                 | PropertyGet(Some item, prop, args) -> (match item with | Var(_) -> expr 
                                                                          | _      -> Expr.PropertyGet(Var("_", prop.DeclaringType) |> Expr.Var, prop, args))
                                                         :: (buildChain item)
                 | Var(_) -> []
-                | _ -> failwith "TODO"
+                | _ -> failwith "TODO" // TODO
 
         expr |> buildChain 
              |> List.rev 
 
-    let getExpressionChain = GetExpressionChain
-
-#if false 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public static MemberInfo GetMemberInfo(this Expression expression)
-        {
-            MemberInfo info = null;
-            switch (expression.NodeType) {
-            case ExpressionType.Index:
-                info = ((IndexExpression)expression).Indexer;
-                break;
-            case ExpressionType.MemberAccess:
-                info = ((MemberExpression)expression).Member;
-                break;
-            case ExpressionType.Convert:
-            case ExpressionType.ConvertChecked:
-                return GetMemberInfo(((UnaryExpression)expression).Operand);
-            default:
-                throw new NotSupportedException(string.Format("Unsupported expression type: '{0}'", expression.NodeType));
-            }
-
-            return info;
-        }
-
-
-#endif
     /// <summary>
     ///
     /// </summary>
     /// <param name="expression"></param>
     /// <returns></returns>
-    let GetParent(expression : Expr) =
+    [<CompiledName("GetParent")>]
+    let getParent(expression : Expr) =
         match expression with 
         | PropertyGet(Some parent, _, _)  -> parent
         | _ -> raise (NotSupportedException(sprintf "Unsupported expression type: '%A'" expression.Type))
-
-    // TODO - there's an attribute for this
-    let getParent = GetParent
 
     let rec rewrite (expr : Expr) =
         match expr with

@@ -22,7 +22,6 @@ type INPCObservableForProperty() =
             let before = match sender with | :? INotifyPropertyChanging as before -> Some before | _ -> None
             let after  = match sender with | :? INotifyPropertyChanged  as after  -> Some after | _ -> None
 
-            //    var memberInfo = expression.GetMemberInfo();
             let name = match expression with
                         | PropertyGet(_, info, []) -> info.Name
                         | PropertyGet(_, info, xs) -> info.Name + "[]"

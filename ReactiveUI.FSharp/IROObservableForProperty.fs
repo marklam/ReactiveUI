@@ -7,8 +7,6 @@ open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Quotations.Patterns
 open ReactiveUI
 
-// TODO - use observable stuff from FSharp.Control
-
 /// <summary>
 /// Generates Observables based on observing Reactive objects
 /// </summary>

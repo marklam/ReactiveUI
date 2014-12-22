@@ -13,9 +13,9 @@ open System.Runtime.InteropServices
 type OAPHCreationHelperMixin =
     [<Extension>]
     static member private observableToProperty<'TObj, 'TRet when 'TObj :> ReactiveObject>(this : 'TObj, observable : IObservable<'TRet>, property : Expr<'TObj -> 'TRet>, initialValue : 'TRet, scheduler : IScheduler) : ObservableAsPropertyHelper<'TRet> =
-        let expression = Reflection.Rewrite(property)
+        let expression = property |> Expression.rewrite
 
-        match (expression |> Expression.GetParent) with
+        match (expression |> Expression.getParent) with
         | Var(_) -> let name = expression |> Expression.getName
                     new ObservableAsPropertyHelper<'TRet>(observable, (fun _ -> this.RaisePropertyChanged(name)), (fun _ -> this.RaisePropertyChanging(name)), initialValue, scheduler)
         | _ -> raise (ArgumentException("Property expression must be of the form 'x => x.SomeProperty'"))
@@ -60,5 +60,5 @@ type OAPHCreationHelperMixin =
         let initialValue = defaultArg initialValue Unchecked.defaultof<'TRet>
         let scheduler    = defaultArg scheduler null
         let ret = OAPHCreationHelperMixin.observableToProperty(source, this, property, initialValue, scheduler)
-        result <- ret;
-        ret;
+        result <- ret
+        ret
