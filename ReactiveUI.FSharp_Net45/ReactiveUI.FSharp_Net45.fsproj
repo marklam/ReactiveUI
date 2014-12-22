@@ -85,6 +85,15 @@
     <Compile Include="..\ReactiveUI.FSharp\WhenAnyMixin.fs">
       <Link>WhenAnyMixin.fs</Link>
     </Compile>
+    <Compile Include="..\ReactiveUI.FSharp\OAPHCreationHelperMixin.fs">
+      <Link>OAPHCreationHelperMixin.fs</Link>
+    </Compile>
+    <Compile Include="..\ReactiveUI.FSharp\ReactiveCommandMixins.fs">
+      <Link>ReactiveCommandMixins.fs</Link>
+    </Compile>
+    <Compile Include="..\ReactiveUI.FSharp\ReactiveObjectExtensions.fs">
+      <Link>ReactiveObjectExtensions.fs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

@@ -52,6 +52,9 @@
     <Compile Include="NotifyChanged.fs" />
     <Compile Include="ReactiveNotifyPropertyChangedMixin.fs" />
     <Compile Include="WhenAnyMixin.fs" />
+    <Compile Include="OAPHCreationHelperMixin.fs" />
+    <Compile Include="ReactiveCommandMixins.fs" />
+    <Compile Include="ReactiveObjectExtensions.fs" />
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

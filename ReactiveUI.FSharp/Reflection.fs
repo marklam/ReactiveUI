@@ -81,8 +81,8 @@ module Reflection =
         expr |> Expression.getExpressionChain
              |> List.map(fun e -> match e with
                                   | PropertyGet(_, prop, [])   -> prop.Name
-                                  | PropertyGet(_, prop, args) -> prop.Name + "[" +  "TODO" + "]" 
-                                  | _ -> failwith "TODO"
+                                  | PropertyGet(_, prop, args) -> prop.Name + "[" +  "TODO" + "]"   // TODO
+                                  | _ -> failwith "TODO"                                            // TODO
                          )
              |> List.reduce(fun a b -> a + "." + b)
 

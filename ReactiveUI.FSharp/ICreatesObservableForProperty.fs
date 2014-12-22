@@ -3,7 +3,6 @@
 open System
 open Microsoft.FSharp.Quotations
 open ReactiveUI
-open Splat
 
 [<Interface>]
 type ICreatesObservableForProperty =

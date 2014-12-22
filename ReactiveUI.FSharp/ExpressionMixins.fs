@@ -4,8 +4,6 @@ open System
 open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Quotations.Patterns
 
-// TODO - these Expression and Reflection bits seem overly complicated
-
 module Expression =
     let private constantArg = function | Value(v, _) -> Some v | _ -> None 
 
@@ -63,24 +61,20 @@ module Expression =
             return info;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public static Expression GetParent(this Expression expression)
-        {
-            switch (expression.NodeType) {
-            case ExpressionType.Index:
-                return ((IndexExpression)expression).Object;
-            case ExpressionType.MemberAccess:
-                return ((MemberExpression)expression).Expression;
-            default:
-                throw new NotSupportedException(string.Format("Unsupported expression type: '{0}'", expression.NodeType));
-            }
-        }
 
 #endif
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="expression"></param>
+    /// <returns></returns>
+    let GetParent(expression : Expr) =
+        match expression with 
+        | PropertyGet(Some parent, _, _)  -> parent
+        | _ -> raise (NotSupportedException(sprintf "Unsupported expression type: '%A'" expression.Type))
+
+    // TODO - there's an attribute for this
+    let getParent = GetParent
 
     let rec rewrite (expr : Expr) =
         match expr with
