@@ -1,0 +1,2 @@
+packages\OpenCover.4.5.3522\OpenCover.Console.exe -register:user -target:packages\xunit.runners.1.9.2\tools\xunit.console.clr4.exe "-targetargs:ReactiveUI.FSharp.Tests_Net45\bin\Debug\ReactiveUI.FSharp.Tests_Net45.dll /noshadow" -filter:+[ReactiveUI.FSharp*]* -output:ReactiveUI.FSharp.Tests.xml 
+packages\ReportGenerator.2.0.2.0\ReportGenerator.exe -reports:ReactiveUI.FSharp.Tests.xml -targetdir:Reports 
