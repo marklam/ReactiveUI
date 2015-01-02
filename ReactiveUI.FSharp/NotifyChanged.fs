@@ -47,16 +47,16 @@ type NotifyChanged() =
         let skipInitial =  defaultArg skipInitial  true
         let (chain : Expr list) = expression |> Expression.rewrite |> Expression.getExpressionChain
 
-        let mutable notifier = Observable.Return(FSObservedChange<obj, obj>(source, Expr.Var(Var("_", typeof<'TSender>)), source :> obj |> Some))
-        notifier <- chain |> Seq.fold (fun n expr -> n.Select(fun y -> nestedObservedChanges(expr, y, beforeChange)).Switch()) notifier 
-        if skipInitial then notifier <- notifier.Skip(1)
-        notifier <- notifier.Where(fun x -> x.Sender <> null)
-
-        let r = notifier.Select(fun x -> match x.Value with
-                                         | :? 'TValue as value -> FSObservedChange<'TSender, 'TValue>(source, expression, Some value)
-                                         | x when box x = null -> FSObservedChange<'TSender, 'TValue>(source, expression, None)
-                                         | x -> raise (InvalidCastException(String.Format("Unable to cast from {0} to {1}.", x.GetType(), typeof<'TValue>)))
-                                         )
+        let intial = Observable.Return(FSObservedChange<obj, obj>(source, Expr.Var(Var("_", typeof<'TSender>)), source :> obj |> Some))
+        let notifier = chain |> Seq.fold (fun (n : IObservable<_>) expr -> n.Select(fun y -> nestedObservedChanges(expr, y, beforeChange)).Switch()) intial 
+        
+        let r = (if skipInitial then notifier.Skip(1) else notifier).
+                 Where(fun x -> x.Sender <> null).
+                 Select(fun x -> match x.Value with
+                                  | :? 'TValue as value -> FSObservedChange<'TSender, 'TValue>(source, expression, Some value)
+                                  | x when box x = null -> FSObservedChange<'TSender, 'TValue>(source, expression, None)
+                                  | x -> raise (InvalidCastException(String.Format("Unable to cast from {0} to {1}.", x.GetType(), typeof<'TValue>)))
+                                  )
 
         r.DistinctUntilChanged(fun x -> x.Value)
 

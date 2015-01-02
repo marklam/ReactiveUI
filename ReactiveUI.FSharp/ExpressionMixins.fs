@@ -28,7 +28,7 @@ module Expression =
                                                                          | _      -> Expr.PropertyGet(Var("_", prop.DeclaringType) |> Expr.Var, prop, args))
                                                         :: (buildChain item)
                 | Var(_) -> []
-                | _ -> failwith "TODO" // TODO
+                | _ -> raise (NotSupportedException(sprintf "Unsupported expression type: '%A'" (expr.Type)))
 
         expr |> buildChain 
              |> List.rev 

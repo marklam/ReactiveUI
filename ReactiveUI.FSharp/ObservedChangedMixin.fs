@@ -3,7 +3,7 @@
 open ReactiveUI
 
 // TODO - test all public API
-// TODO - FSObservedChange internal?
+// TODO - FSObservedChange public interface, internal type
 
 [<AutoOpen>]
 module ObservedChangedMixin =

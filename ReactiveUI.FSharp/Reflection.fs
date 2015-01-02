@@ -29,6 +29,6 @@ module Reflection =
              |> List.map(fun e -> match e with
                                   | PropertyGet(_, prop, [])   -> prop.Name
                                   | PropertyGet(_, prop, args) -> prop.Name + "[" +  "TODO" + "]"   // TODO
-                                  | _ -> failwith "TODO"                                            // TODO
+                                  | _ -> raise (NotSupportedException(sprintf "Unsupported expression type: '%A'" (expr.Type)))
                          )
              |> List.reduce(fun a b -> a + "." + b)

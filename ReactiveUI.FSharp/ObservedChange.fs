@@ -9,9 +9,6 @@ type FSObservedChange<'TSender, 'TValue>(sender:'TSender, expression:Expr, ?valu
     let getCachedValue() = if value.IsNone then value <- Reflection.tryGetValueForPropertyChain(sender, expression |> Expression.getExpressionChain)
                            value
 
-//    do 
-//        if obj.Equals(sender, Unchecked.defaultof<'TSender>) then failwith "WTF"
-
     /// <summary>
     /// Attempts to return the current value of a property given a 
     /// notification that it has changed. If any property in the
