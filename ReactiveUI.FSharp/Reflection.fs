@@ -13,13 +13,15 @@ module Reflection =
             | _ -> raise (ArgumentException(sprintf "Type must have a property '%A'" memb))
     
     let rec tryGetValueForPropertyChain(current : obj, expressionChain : Expr list) : 'TValue option =
-        match expressionChain with
-        | [lastExpression]                        -> let args  = lastExpression |> Expression.getArgumentsArray 
-                                                     let value = getValueFetcherOrThrow (lastExpression) current args
-                                                     value :?> 'TValue |> Some
-        | expression :: tail when current <> null -> let args  = expression |> Expression.getArgumentsArray
-                                                     tryGetValueForPropertyChain((getValueFetcherOrThrow(expression) current args), tail)
-        | _                                       -> None
+        if (null = current) 
+            then None
+            else match expressionChain with
+                 | [lastExpression]   -> let args  = lastExpression |> Expression.getArgumentsArray 
+                                         let value = getValueFetcherOrThrow (lastExpression) current args
+                                         value :?> 'TValue |> Some
+                 | expression :: tail -> let args  = expression |> Expression.getArgumentsArray
+                                         tryGetValueForPropertyChain((getValueFetcherOrThrow(expression) current args), tail)
+                 | _                  -> None
 
     [<CompiledName("ExpressionToPropertyNames")>]
     let expressionToPropertyNames(expr : Expr) =

@@ -8,6 +8,6 @@ open ReactiveUI
 type ICreatesObservableForProperty =
     inherit Splat.IEnableLogger
     abstract member GetAffinityForObject : ``type``:Type * propertyName:string * beforeChanged:bool -> int
-    abstract member GetNotificationForProperty : sender:obj * expression:Expr * beforeChanged:bool -> IObservable<IObservedChange<obj,obj>>
+    abstract member GetNotificationForProperty : sender:obj * expression:Expr * beforeChanged:bool -> IObservable<FSObservedChange<obj,obj>>
 
 

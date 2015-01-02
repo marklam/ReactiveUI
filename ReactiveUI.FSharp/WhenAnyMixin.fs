@@ -19,7 +19,7 @@ type WhenAnyMixin() =
     /// </summary>
 
     [<Extension>]
-    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, selector : IObservedChange<'TSender, 'T1> -> 'TRet) =
+    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, selector : FSObservedChange<'TSender, 'T1> -> 'TRet) =
         this.ObservableForProperty(property1, false, false).Select(selector) 
 
     /// <summary>
@@ -30,7 +30,7 @@ type WhenAnyMixin() =
     /// initial setup.
     /// </summary>
     [<Extension>]
-    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, selector : IObservedChange<'TSender, 'T1> -> IObservedChange<'TSender, 'T2> -> 'TRet) =
+    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, selector : FSObservedChange<'TSender, 'T1> -> FSObservedChange<'TSender, 'T2> -> 'TRet) =
         System.Reactive.Linq.Observable.CombineLatest(this.ObservableForProperty(property1, false, false), this.ObservableForProperty(property2, false, false), Func<_,_,_>(selector))
 
 
@@ -42,7 +42,7 @@ type WhenAnyMixin() =
     /// initial setup.
     /// </summary>
     [<Extension>]
-    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, selector : IObservedChange<'TSender, 'T1> -> IObservedChange<'TSender, 'T2> -> IObservedChange<'TSender, 'T3> -> 'TRet) =
+    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, selector : FSObservedChange<'TSender, 'T1> -> FSObservedChange<'TSender, 'T2> -> FSObservedChange<'TSender, 'T3> -> 'TRet) =
         System.Reactive.Linq.Observable.CombineLatest(this.ObservableForProperty(property1, false, false), this.ObservableForProperty(property2, false, false), this.ObservableForProperty(property3, false, false), Func<_,_,_,_>(selector))
 
 
@@ -54,7 +54,7 @@ type WhenAnyMixin() =
     /// initial setup.
     /// </summary>
     [<Extension>]
-    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, selector : IObservedChange<'TSender, 'T1> -> IObservedChange<'TSender, 'T2> -> IObservedChange<'TSender, 'T3> -> IObservedChange<'TSender, 'T4> -> 'TRet) =
+    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, selector : FSObservedChange<'TSender, 'T1> -> FSObservedChange<'TSender, 'T2> -> FSObservedChange<'TSender, 'T3> -> FSObservedChange<'TSender, 'T4> -> 'TRet) =
         System.Reactive.Linq.Observable.CombineLatest(this.ObservableForProperty(property1, false, false), this.ObservableForProperty(property2, false, false), this.ObservableForProperty(property3, false, false), this.ObservableForProperty(property4, false, false), Func<_,_,_,_,_>(selector))
 
 
@@ -66,7 +66,7 @@ type WhenAnyMixin() =
     /// initial setup.
     /// </summary>
     [<Extension>]
-    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, selector : IObservedChange<'TSender, 'T1> -> IObservedChange<'TSender, 'T2> -> IObservedChange<'TSender, 'T3> -> IObservedChange<'TSender, 'T4> -> IObservedChange<'TSender, 'T5> -> 'TRet) =
+    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, selector : FSObservedChange<'TSender, 'T1> -> FSObservedChange<'TSender, 'T2> -> FSObservedChange<'TSender, 'T3> -> FSObservedChange<'TSender, 'T4> -> FSObservedChange<'TSender, 'T5> -> 'TRet) =
         System.Reactive.Linq.Observable.CombineLatest(this.ObservableForProperty(property1, false, false), this.ObservableForProperty(property2, false, false), this.ObservableForProperty(property3, false, false), this.ObservableForProperty(property4, false, false), this.ObservableForProperty(property5, false, false), Func<_,_,_,_,_,_>(selector))
 
 
@@ -78,7 +78,7 @@ type WhenAnyMixin() =
     /// initial setup.
     /// </summary>
     [<Extension>]
-    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, selector : IObservedChange<'TSender, 'T1> -> IObservedChange<'TSender, 'T2> -> IObservedChange<'TSender, 'T3> -> IObservedChange<'TSender, 'T4> -> IObservedChange<'TSender, 'T5> -> IObservedChange<'TSender, 'T6> -> 'TRet) =
+    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, selector : FSObservedChange<'TSender, 'T1> -> FSObservedChange<'TSender, 'T2> -> FSObservedChange<'TSender, 'T3> -> FSObservedChange<'TSender, 'T4> -> FSObservedChange<'TSender, 'T5> -> FSObservedChange<'TSender, 'T6> -> 'TRet) =
         System.Reactive.Linq.Observable.CombineLatest(this.ObservableForProperty(property1, false, false), this.ObservableForProperty(property2, false, false), this.ObservableForProperty(property3, false, false), this.ObservableForProperty(property4, false, false), this.ObservableForProperty(property5, false, false), this.ObservableForProperty(property6, false, false), Func<_,_,_,_,_,_,_>(selector))
 
 
@@ -90,7 +90,7 @@ type WhenAnyMixin() =
     /// initial setup.
     /// </summary>
     [<Extension>]
-    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>, selector : IObservedChange<'TSender, 'T1> -> IObservedChange<'TSender, 'T2> -> IObservedChange<'TSender, 'T3> -> IObservedChange<'TSender, 'T4> -> IObservedChange<'TSender, 'T5> -> IObservedChange<'TSender, 'T6> -> IObservedChange<'TSender, 'T7> -> 'TRet) =
+    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>, selector : FSObservedChange<'TSender, 'T1> -> FSObservedChange<'TSender, 'T2> -> FSObservedChange<'TSender, 'T3> -> FSObservedChange<'TSender, 'T4> -> FSObservedChange<'TSender, 'T5> -> FSObservedChange<'TSender, 'T6> -> FSObservedChange<'TSender, 'T7> -> 'TRet) =
         System.Reactive.Linq.Observable.CombineLatest(this.ObservableForProperty(property1, false, false), this.ObservableForProperty(property2, false, false), this.ObservableForProperty(property3, false, false), this.ObservableForProperty(property4, false, false), this.ObservableForProperty(property5, false, false), this.ObservableForProperty(property6, false, false), this.ObservableForProperty(property7, false, false), Func<_,_,_,_,_,_,_,_>(selector))
 
 
@@ -102,7 +102,7 @@ type WhenAnyMixin() =
     /// initial setup.
     /// </summary>
     [<Extension>]
-    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>, property8 : Expr<'TSender -> 'T8>, selector : IObservedChange<'TSender, 'T1> -> IObservedChange<'TSender, 'T2> -> IObservedChange<'TSender, 'T3> -> IObservedChange<'TSender, 'T4> -> IObservedChange<'TSender, 'T5> -> IObservedChange<'TSender, 'T6> -> IObservedChange<'TSender, 'T7> -> IObservedChange<'TSender, 'T8> -> 'TRet) =
+    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>, property8 : Expr<'TSender -> 'T8>, selector : FSObservedChange<'TSender, 'T1> -> FSObservedChange<'TSender, 'T2> -> FSObservedChange<'TSender, 'T3> -> FSObservedChange<'TSender, 'T4> -> FSObservedChange<'TSender, 'T5> -> FSObservedChange<'TSender, 'T6> -> FSObservedChange<'TSender, 'T7> -> FSObservedChange<'TSender, 'T8> -> 'TRet) =
         System.Reactive.Linq.Observable.CombineLatest(this.ObservableForProperty(property1, false, false), this.ObservableForProperty(property2, false, false), this.ObservableForProperty(property3, false, false), this.ObservableForProperty(property4, false, false), this.ObservableForProperty(property5, false, false), this.ObservableForProperty(property6, false, false), this.ObservableForProperty(property7, false, false), this.ObservableForProperty(property8, false, false), Func<_,_,_,_,_,_,_,_,_>(selector))
 
 
@@ -114,7 +114,7 @@ type WhenAnyMixin() =
     /// initial setup.
     /// </summary>
     [<Extension>]
-    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>, property8 : Expr<'TSender -> 'T8>, property9 : Expr<'TSender -> 'T9>, selector : IObservedChange<'TSender, 'T1> -> IObservedChange<'TSender, 'T2> -> IObservedChange<'TSender, 'T3> -> IObservedChange<'TSender, 'T4> -> IObservedChange<'TSender, 'T5> -> IObservedChange<'TSender, 'T6> -> IObservedChange<'TSender, 'T7> -> IObservedChange<'TSender, 'T8> -> IObservedChange<'TSender, 'T9> -> 'TRet) =
+    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>, property8 : Expr<'TSender -> 'T8>, property9 : Expr<'TSender -> 'T9>, selector : FSObservedChange<'TSender, 'T1> -> FSObservedChange<'TSender, 'T2> -> FSObservedChange<'TSender, 'T3> -> FSObservedChange<'TSender, 'T4> -> FSObservedChange<'TSender, 'T5> -> FSObservedChange<'TSender, 'T6> -> FSObservedChange<'TSender, 'T7> -> FSObservedChange<'TSender, 'T8> -> FSObservedChange<'TSender, 'T9> -> 'TRet) =
         System.Reactive.Linq.Observable.CombineLatest(this.ObservableForProperty(property1, false, false), this.ObservableForProperty(property2, false, false), this.ObservableForProperty(property3, false, false), this.ObservableForProperty(property4, false, false), this.ObservableForProperty(property5, false, false), this.ObservableForProperty(property6, false, false), this.ObservableForProperty(property7, false, false), this.ObservableForProperty(property8, false, false), this.ObservableForProperty(property9, false, false), Func<_,_,_,_,_,_,_,_,_,_>(selector))
 
 
@@ -126,7 +126,7 @@ type WhenAnyMixin() =
     /// initial setup.
     /// </summary>
     [<Extension>]
-    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>, property8 : Expr<'TSender -> 'T8>, property9 : Expr<'TSender -> 'T9>, property10 : Expr<'TSender -> 'T10>, selector : IObservedChange<'TSender, 'T1> -> IObservedChange<'TSender, 'T2> -> IObservedChange<'TSender, 'T3> -> IObservedChange<'TSender, 'T4> -> IObservedChange<'TSender, 'T5> -> IObservedChange<'TSender, 'T6> -> IObservedChange<'TSender, 'T7> -> IObservedChange<'TSender, 'T8> -> IObservedChange<'TSender, 'T9> -> IObservedChange<'TSender, 'T10> -> 'TRet) =
+    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>, property8 : Expr<'TSender -> 'T8>, property9 : Expr<'TSender -> 'T9>, property10 : Expr<'TSender -> 'T10>, selector : FSObservedChange<'TSender, 'T1> -> FSObservedChange<'TSender, 'T2> -> FSObservedChange<'TSender, 'T3> -> FSObservedChange<'TSender, 'T4> -> FSObservedChange<'TSender, 'T5> -> FSObservedChange<'TSender, 'T6> -> FSObservedChange<'TSender, 'T7> -> FSObservedChange<'TSender, 'T8> -> FSObservedChange<'TSender, 'T9> -> FSObservedChange<'TSender, 'T10> -> 'TRet) =
         System.Reactive.Linq.Observable.CombineLatest(this.ObservableForProperty(property1, false, false), this.ObservableForProperty(property2, false, false), this.ObservableForProperty(property3, false, false), this.ObservableForProperty(property4, false, false), this.ObservableForProperty(property5, false, false), this.ObservableForProperty(property6, false, false), this.ObservableForProperty(property7, false, false), this.ObservableForProperty(property8, false, false), this.ObservableForProperty(property9, false, false), this.ObservableForProperty(property10, false, false), Func<_,_,_,_,_,_,_,_,_,_,_>(selector))
 
 
@@ -138,7 +138,7 @@ type WhenAnyMixin() =
     /// initial setup.
     /// </summary>
     [<Extension>]
-    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>, property8 : Expr<'TSender -> 'T8>, property9 : Expr<'TSender -> 'T9>, property10 : Expr<'TSender -> 'T10>, property11 : Expr<'TSender -> 'T11>, selector : IObservedChange<'TSender, 'T1> -> IObservedChange<'TSender, 'T2> -> IObservedChange<'TSender, 'T3> -> IObservedChange<'TSender, 'T4> -> IObservedChange<'TSender, 'T5> -> IObservedChange<'TSender, 'T6> -> IObservedChange<'TSender, 'T7> -> IObservedChange<'TSender, 'T8> -> IObservedChange<'TSender, 'T9> -> IObservedChange<'TSender, 'T10> -> IObservedChange<'TSender, 'T11> -> 'TRet) =
+    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>, property8 : Expr<'TSender -> 'T8>, property9 : Expr<'TSender -> 'T9>, property10 : Expr<'TSender -> 'T10>, property11 : Expr<'TSender -> 'T11>, selector : FSObservedChange<'TSender, 'T1> -> FSObservedChange<'TSender, 'T2> -> FSObservedChange<'TSender, 'T3> -> FSObservedChange<'TSender, 'T4> -> FSObservedChange<'TSender, 'T5> -> FSObservedChange<'TSender, 'T6> -> FSObservedChange<'TSender, 'T7> -> FSObservedChange<'TSender, 'T8> -> FSObservedChange<'TSender, 'T9> -> FSObservedChange<'TSender, 'T10> -> FSObservedChange<'TSender, 'T11> -> 'TRet) =
         System.Reactive.Linq.Observable.CombineLatest(this.ObservableForProperty(property1, false, false), this.ObservableForProperty(property2, false, false), this.ObservableForProperty(property3, false, false), this.ObservableForProperty(property4, false, false), this.ObservableForProperty(property5, false, false), this.ObservableForProperty(property6, false, false), this.ObservableForProperty(property7, false, false), this.ObservableForProperty(property8, false, false), this.ObservableForProperty(property9, false, false), this.ObservableForProperty(property10, false, false), this.ObservableForProperty(property11, false, false), Func<_,_,_,_,_,_,_,_,_,_,_,_>(selector))
 
 
@@ -150,7 +150,7 @@ type WhenAnyMixin() =
     /// initial setup.
     /// </summary>
     [<Extension>]
-    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>, property8 : Expr<'TSender -> 'T8>, property9 : Expr<'TSender -> 'T9>, property10 : Expr<'TSender -> 'T10>, property11 : Expr<'TSender -> 'T11>, property12 : Expr<'TSender -> 'T12>, selector : IObservedChange<'TSender, 'T1> -> IObservedChange<'TSender, 'T2> -> IObservedChange<'TSender, 'T3> -> IObservedChange<'TSender, 'T4> -> IObservedChange<'TSender, 'T5> -> IObservedChange<'TSender, 'T6> -> IObservedChange<'TSender, 'T7> -> IObservedChange<'TSender, 'T8> -> IObservedChange<'TSender, 'T9> -> IObservedChange<'TSender, 'T10> -> IObservedChange<'TSender, 'T11> -> IObservedChange<'TSender, 'T12> -> 'TRet) =
+    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>, property8 : Expr<'TSender -> 'T8>, property9 : Expr<'TSender -> 'T9>, property10 : Expr<'TSender -> 'T10>, property11 : Expr<'TSender -> 'T11>, property12 : Expr<'TSender -> 'T12>, selector : FSObservedChange<'TSender, 'T1> -> FSObservedChange<'TSender, 'T2> -> FSObservedChange<'TSender, 'T3> -> FSObservedChange<'TSender, 'T4> -> FSObservedChange<'TSender, 'T5> -> FSObservedChange<'TSender, 'T6> -> FSObservedChange<'TSender, 'T7> -> FSObservedChange<'TSender, 'T8> -> FSObservedChange<'TSender, 'T9> -> FSObservedChange<'TSender, 'T10> -> FSObservedChange<'TSender, 'T11> -> FSObservedChange<'TSender, 'T12> -> 'TRet) =
         System.Reactive.Linq.Observable.CombineLatest(this.ObservableForProperty(property1, false, false), this.ObservableForProperty(property2, false, false), this.ObservableForProperty(property3, false, false), this.ObservableForProperty(property4, false, false), this.ObservableForProperty(property5, false, false), this.ObservableForProperty(property6, false, false), this.ObservableForProperty(property7, false, false), this.ObservableForProperty(property8, false, false), this.ObservableForProperty(property9, false, false), this.ObservableForProperty(property10, false, false), this.ObservableForProperty(property11, false, false), this.ObservableForProperty(property12, false, false), Func<_,_,_,_,_,_,_,_,_,_,_,_,_>(selector))
 
 
@@ -163,7 +163,7 @@ type WhenAnyMixin() =
     /// </summary>
     [<Extension>]
     static member inline WhenAnyValue(this : 'TSender, property1 : Expr<'TSender -> 'T1>) =
-        WhenAnyMixin.WhenAny(this, property1, fun (c1 : IObservedChange<'TSender, 'T1>) -> (c1.Value))
+        WhenAnyMixin.WhenAny(this, property1, fun (c1 : FSObservedChange<'TSender, 'T1>) -> (c1.Value))
 
 
     /// <summary>
@@ -175,7 +175,7 @@ type WhenAnyMixin() =
     /// </summary>
     [<Extension>]
     static member inline WhenAnyValue(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>) =
-        WhenAnyMixin.WhenAny(this, property1, property2, fun (c1 : IObservedChange<'TSender, 'T1>) (c2 : IObservedChange<'TSender, 'T2>) -> (c1.Value, c2.Value))
+        WhenAnyMixin.WhenAny(this, property1, property2, fun (c1 : FSObservedChange<'TSender, 'T1>) (c2 : FSObservedChange<'TSender, 'T2>) -> (c1.Value, c2.Value))
 
 
     /// <summary>
@@ -187,7 +187,7 @@ type WhenAnyMixin() =
     /// </summary>
     [<Extension>]
     static member inline WhenAnyValue(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>) =
-        WhenAnyMixin.WhenAny(this, property1, property2, property3, fun (c1 : IObservedChange<'TSender, 'T1>) (c2 : IObservedChange<'TSender, 'T2>) (c3 : IObservedChange<'TSender, 'T3>) -> (c1.Value, c2.Value, c3.Value))
+        WhenAnyMixin.WhenAny(this, property1, property2, property3, fun (c1 : FSObservedChange<'TSender, 'T1>) (c2 : FSObservedChange<'TSender, 'T2>) (c3 : FSObservedChange<'TSender, 'T3>) -> (c1.Value, c2.Value, c3.Value))
 
 
     /// <summary>
@@ -199,7 +199,7 @@ type WhenAnyMixin() =
     /// </summary>
     [<Extension>]
     static member inline WhenAnyValue(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>) =
-        WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, fun (c1 : IObservedChange<'TSender, 'T1>) (c2 : IObservedChange<'TSender, 'T2>) (c3 : IObservedChange<'TSender, 'T3>) (c4 : IObservedChange<'TSender, 'T4>) -> (c1.Value, c2.Value, c3.Value, c4.Value))
+        WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, fun (c1 : FSObservedChange<'TSender, 'T1>) (c2 : FSObservedChange<'TSender, 'T2>) (c3 : FSObservedChange<'TSender, 'T3>) (c4 : FSObservedChange<'TSender, 'T4>) -> (c1.Value, c2.Value, c3.Value, c4.Value))
 
 
     /// <summary>
@@ -211,7 +211,7 @@ type WhenAnyMixin() =
     /// </summary>
     [<Extension>]
     static member inline WhenAnyValue(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>) =
-        WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, property5, fun (c1 : IObservedChange<'TSender, 'T1>) (c2 : IObservedChange<'TSender, 'T2>) (c3 : IObservedChange<'TSender, 'T3>) (c4 : IObservedChange<'TSender, 'T4>) (c5 : IObservedChange<'TSender, 'T5>) -> (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value))
+        WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, property5, fun (c1 : FSObservedChange<'TSender, 'T1>) (c2 : FSObservedChange<'TSender, 'T2>) (c3 : FSObservedChange<'TSender, 'T3>) (c4 : FSObservedChange<'TSender, 'T4>) (c5 : FSObservedChange<'TSender, 'T5>) -> (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value))
 
 
     /// <summary>
@@ -223,7 +223,7 @@ type WhenAnyMixin() =
     /// </summary>
     [<Extension>]
     static member inline WhenAnyValue(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>) =
-        WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, property5, property6, fun (c1 : IObservedChange<'TSender, 'T1>) (c2 : IObservedChange<'TSender, 'T2>) (c3 : IObservedChange<'TSender, 'T3>) (c4 : IObservedChange<'TSender, 'T4>) (c5 : IObservedChange<'TSender, 'T5>) (c6 : IObservedChange<'TSender, 'T6>) -> (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value))
+        WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, property5, property6, fun (c1 : FSObservedChange<'TSender, 'T1>) (c2 : FSObservedChange<'TSender, 'T2>) (c3 : FSObservedChange<'TSender, 'T3>) (c4 : FSObservedChange<'TSender, 'T4>) (c5 : FSObservedChange<'TSender, 'T5>) (c6 : FSObservedChange<'TSender, 'T6>) -> (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value))
 
 
     /// <summary>
@@ -235,7 +235,7 @@ type WhenAnyMixin() =
     /// </summary>
     [<Extension>]
     static member inline WhenAnyValue(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>) =
-        WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, property5, property6, property7, fun (c1 : IObservedChange<'TSender, 'T1>) (c2 : IObservedChange<'TSender, 'T2>) (c3 : IObservedChange<'TSender, 'T3>) (c4 : IObservedChange<'TSender, 'T4>) (c5 : IObservedChange<'TSender, 'T5>) (c6 : IObservedChange<'TSender, 'T6>) (c7 : IObservedChange<'TSender, 'T7>) -> (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value))
+        WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, property5, property6, property7, fun (c1 : FSObservedChange<'TSender, 'T1>) (c2 : FSObservedChange<'TSender, 'T2>) (c3 : FSObservedChange<'TSender, 'T3>) (c4 : FSObservedChange<'TSender, 'T4>) (c5 : FSObservedChange<'TSender, 'T5>) (c6 : FSObservedChange<'TSender, 'T6>) (c7 : FSObservedChange<'TSender, 'T7>) -> (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value))
 
 
     /// <summary>
@@ -247,7 +247,7 @@ type WhenAnyMixin() =
     /// </summary>
     [<Extension>]
     static member inline WhenAnyValue(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>, property8 : Expr<'TSender -> 'T8>) =
-        WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, property5, property6, property7, property8, fun (c1 : IObservedChange<'TSender, 'T1>) (c2 : IObservedChange<'TSender, 'T2>) (c3 : IObservedChange<'TSender, 'T3>) (c4 : IObservedChange<'TSender, 'T4>) (c5 : IObservedChange<'TSender, 'T5>) (c6 : IObservedChange<'TSender, 'T6>) (c7 : IObservedChange<'TSender, 'T7>) (c8 : IObservedChange<'TSender, 'T8>) -> (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value))
+        WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, property5, property6, property7, property8, fun (c1 : FSObservedChange<'TSender, 'T1>) (c2 : FSObservedChange<'TSender, 'T2>) (c3 : FSObservedChange<'TSender, 'T3>) (c4 : FSObservedChange<'TSender, 'T4>) (c5 : FSObservedChange<'TSender, 'T5>) (c6 : FSObservedChange<'TSender, 'T6>) (c7 : FSObservedChange<'TSender, 'T7>) (c8 : FSObservedChange<'TSender, 'T8>) -> (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value))
 
 
     /// <summary>
@@ -259,7 +259,7 @@ type WhenAnyMixin() =
     /// </summary>
     [<Extension>]
     static member inline WhenAnyValue(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>, property8 : Expr<'TSender -> 'T8>, property9 : Expr<'TSender -> 'T9>) =
-        WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, property5, property6, property7, property8, property9, fun (c1 : IObservedChange<'TSender, 'T1>) (c2 : IObservedChange<'TSender, 'T2>) (c3 : IObservedChange<'TSender, 'T3>) (c4 : IObservedChange<'TSender, 'T4>) (c5 : IObservedChange<'TSender, 'T5>) (c6 : IObservedChange<'TSender, 'T6>) (c7 : IObservedChange<'TSender, 'T7>) (c8 : IObservedChange<'TSender, 'T8>) (c9 : IObservedChange<'TSender, 'T9>) -> (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value, c9.Value))
+        WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, property5, property6, property7, property8, property9, fun (c1 : FSObservedChange<'TSender, 'T1>) (c2 : FSObservedChange<'TSender, 'T2>) (c3 : FSObservedChange<'TSender, 'T3>) (c4 : FSObservedChange<'TSender, 'T4>) (c5 : FSObservedChange<'TSender, 'T5>) (c6 : FSObservedChange<'TSender, 'T6>) (c7 : FSObservedChange<'TSender, 'T7>) (c8 : FSObservedChange<'TSender, 'T8>) (c9 : FSObservedChange<'TSender, 'T9>) -> (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value, c9.Value))
 
 
     /// <summary>
@@ -271,7 +271,7 @@ type WhenAnyMixin() =
     /// </summary>
     [<Extension>]
     static member inline WhenAnyValue(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>, property8 : Expr<'TSender -> 'T8>, property9 : Expr<'TSender -> 'T9>, property10 : Expr<'TSender -> 'T10>) =
-        WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, property5, property6, property7, property8, property9, property10, fun (c1 : IObservedChange<'TSender, 'T1>) (c2 : IObservedChange<'TSender, 'T2>) (c3 : IObservedChange<'TSender, 'T3>) (c4 : IObservedChange<'TSender, 'T4>) (c5 : IObservedChange<'TSender, 'T5>) (c6 : IObservedChange<'TSender, 'T6>) (c7 : IObservedChange<'TSender, 'T7>) (c8 : IObservedChange<'TSender, 'T8>) (c9 : IObservedChange<'TSender, 'T9>) (c10 : IObservedChange<'TSender, 'T10>) -> (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value, c9.Value, c10.Value))
+        WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, property5, property6, property7, property8, property9, property10, fun (c1 : FSObservedChange<'TSender, 'T1>) (c2 : FSObservedChange<'TSender, 'T2>) (c3 : FSObservedChange<'TSender, 'T3>) (c4 : FSObservedChange<'TSender, 'T4>) (c5 : FSObservedChange<'TSender, 'T5>) (c6 : FSObservedChange<'TSender, 'T6>) (c7 : FSObservedChange<'TSender, 'T7>) (c8 : FSObservedChange<'TSender, 'T8>) (c9 : FSObservedChange<'TSender, 'T9>) (c10 : FSObservedChange<'TSender, 'T10>) -> (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value, c9.Value, c10.Value))
 
 
     /// <summary>
@@ -283,7 +283,7 @@ type WhenAnyMixin() =
     /// </summary>
     [<Extension>]
     static member inline WhenAnyValue(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>, property8 : Expr<'TSender -> 'T8>, property9 : Expr<'TSender -> 'T9>, property10 : Expr<'TSender -> 'T10>, property11 : Expr<'TSender -> 'T11>) =
-        WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, property5, property6, property7, property8, property9, property10, property11, fun (c1 : IObservedChange<'TSender, 'T1>) (c2 : IObservedChange<'TSender, 'T2>) (c3 : IObservedChange<'TSender, 'T3>) (c4 : IObservedChange<'TSender, 'T4>) (c5 : IObservedChange<'TSender, 'T5>) (c6 : IObservedChange<'TSender, 'T6>) (c7 : IObservedChange<'TSender, 'T7>) (c8 : IObservedChange<'TSender, 'T8>) (c9 : IObservedChange<'TSender, 'T9>) (c10 : IObservedChange<'TSender, 'T10>) (c11 : IObservedChange<'TSender, 'T11>) -> (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value, c9.Value, c10.Value, c11.Value))
+        WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, property5, property6, property7, property8, property9, property10, property11, fun (c1 : FSObservedChange<'TSender, 'T1>) (c2 : FSObservedChange<'TSender, 'T2>) (c3 : FSObservedChange<'TSender, 'T3>) (c4 : FSObservedChange<'TSender, 'T4>) (c5 : FSObservedChange<'TSender, 'T5>) (c6 : FSObservedChange<'TSender, 'T6>) (c7 : FSObservedChange<'TSender, 'T7>) (c8 : FSObservedChange<'TSender, 'T8>) (c9 : FSObservedChange<'TSender, 'T9>) (c10 : FSObservedChange<'TSender, 'T10>) (c11 : FSObservedChange<'TSender, 'T11>) -> (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value, c9.Value, c10.Value, c11.Value))
 
 
     /// <summary>
@@ -295,7 +295,7 @@ type WhenAnyMixin() =
     /// </summary>
     [<Extension>]
     static member inline WhenAnyValue(this : 'TSender, property1 : Expr<'TSender -> 'T1>, property2 : Expr<'TSender -> 'T2>, property3 : Expr<'TSender -> 'T3>, property4 : Expr<'TSender -> 'T4>, property5 : Expr<'TSender -> 'T5>, property6 : Expr<'TSender -> 'T6>, property7 : Expr<'TSender -> 'T7>, property8 : Expr<'TSender -> 'T8>, property9 : Expr<'TSender -> 'T9>, property10 : Expr<'TSender -> 'T10>, property11 : Expr<'TSender -> 'T11>, property12 : Expr<'TSender -> 'T12>) =
-        WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, property5, property6, property7, property8, property9, property10, property11, property12, fun (c1 : IObservedChange<'TSender, 'T1>) (c2 : IObservedChange<'TSender, 'T2>) (c3 : IObservedChange<'TSender, 'T3>) (c4 : IObservedChange<'TSender, 'T4>) (c5 : IObservedChange<'TSender, 'T5>) (c6 : IObservedChange<'TSender, 'T6>) (c7 : IObservedChange<'TSender, 'T7>) (c8 : IObservedChange<'TSender, 'T8>) (c9 : IObservedChange<'TSender, 'T9>) (c10 : IObservedChange<'TSender, 'T10>) (c11 : IObservedChange<'TSender, 'T11>) (c12 : IObservedChange<'TSender, 'T12>) -> (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value, c9.Value, c10.Value, c11.Value, c12.Value))
+        WhenAnyMixin.WhenAny(this, property1, property2, property3, property4, property5, property6, property7, property8, property9, property10, property11, property12, fun (c1 : FSObservedChange<'TSender, 'T1>) (c2 : FSObservedChange<'TSender, 'T2>) (c3 : FSObservedChange<'TSender, 'T3>) (c4 : FSObservedChange<'TSender, 'T4>) (c5 : FSObservedChange<'TSender, 'T5>) (c6 : FSObservedChange<'TSender, 'T6>) (c7 : FSObservedChange<'TSender, 'T7>) (c8 : FSObservedChange<'TSender, 'T8>) (c9 : FSObservedChange<'TSender, 'T9>) (c10 : FSObservedChange<'TSender, 'T10>) (c11 : FSObservedChange<'TSender, 'T11>) (c12 : FSObservedChange<'TSender, 'T12>) -> (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value, c9.Value, c10.Value, c11.Value, c12.Value))
 
 
     /// <summary>

@@ -42,8 +42,8 @@
     <None Include="GenerateCode.fsx" />
     <Compile Include="ExpressionMixins.fs" />
     <Compile Include="Reflection.fs" />
-    <Compile Include="ICreatesObservableForProperty.fs" />
     <Compile Include="ObservedChange.fs" />
+    <Compile Include="ICreatesObservableForProperty.fs" />
     <Compile Include="ObservedChangedMixin.fs" />
     <Compile Include="POCOObservableForProperty.fs" />
     <Compile Include="IROObservableForProperty.fs" />

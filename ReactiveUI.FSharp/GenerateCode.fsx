@@ -40,7 +40,7 @@ let whenAnyValueComment = """
 
 let typeDefinition = "[<Extension>]\r\ntype WhenAnyMixin() = \r\n" + whenAnyComment + """
     [<Extension>]
-    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, selector : IObservedChange<'TSender, 'T1> -> 'TRet) =
+    static member inline WhenAny(this : 'TSender, property1 : Expr<'TSender -> 'T1>, selector : FSObservedChange<'TSender, 'T1> -> 'TRet) =
         this.ObservableForProperty(property1, false, false).Select(selector) 
 """
 
@@ -54,7 +54,7 @@ let whenAnyDeclaration length =
     let paramIndex = seq { 1 .. length }
     let propertyParams = paramIndex |> Seq.map (fun x -> String.Format("property{0} : Expr<'TSender -> 'T{0}>", x))
                                     |> Seq.reduce commas
-    let selectorType   =(paramIndex |> Seq.map (fun x -> String.Format("IObservedChange<'TSender, 'T{0}>", x))
+    let selectorType   =(paramIndex |> Seq.map (fun x -> String.Format("FSObservedChange<'TSender, 'T{0}>", x))
                                     |> Seq.reduce arrows)
                                     + " -> 'TRet"
     let observables    = paramIndex |> Seq.map (fun x -> String.Format("this.ObservableForProperty(property{0}, false, false)", x))
@@ -71,7 +71,7 @@ let whenAnyValueTuple length =
                                     |> Seq.reduce commas
     let properties     = paramIndex |> Seq.map (fun x -> String.Format("property{0}", x))   
                                     |> Seq.reduce commas
-    let selectorParams = paramIndex |> Seq.map (fun x -> String.Format("(c{0} : IObservedChange<'TSender, 'T{0}>)", x)) 
+    let selectorParams = paramIndex |> Seq.map (fun x -> String.Format("(c{0} : FSObservedChange<'TSender, 'T{0}>)", x)) 
                                     |> Seq.reduce spaces
     let selectorTuple  = paramIndex |> Seq.map (fun x -> String.Format("c{0}.Value", x))
                                     |> Seq.reduce commas

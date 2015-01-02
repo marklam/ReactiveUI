@@ -26,12 +26,12 @@ type DependencyObjectObservableForProperty() =
                      | None   -> 0
                      | Some _ -> 4
 
-        member this.GetNotificationForProperty(sender : obj, expression : Expr, beforeChanged : bool) : IObservable<IObservedChange<obj, obj>> =
+        member this.GetNotificationForProperty(sender : obj, expression : Expr, beforeChanged : bool) : IObservable<FSObservedChange<obj, obj>> =
             let ``type`` = sender.GetType()
             let propertyName = expression |> Expression.getName
             match getDependencyProperty(``type``, propertyName) with
             | None -> failwith "TODO"
             | Some dep -> let dpd = DependencyPropertyDescriptor.FromProperty(dep, ``type``)
-                          Observable.Create(fun (subj : IObserver<_>) -> let handler = EventHandler(fun _ _ -> subj.OnNext(FSObservedChange(sender, expression) :> IObservedChange<_,_>))
+                          Observable.Create(fun (subj : IObserver<_>) -> let handler = EventHandler(fun _ _ -> subj.OnNext(FSObservedChange(sender, expression)))
                                                                          dpd.AddValueChanged(sender, handler)
                                                                          Disposable.Create(fun () -> dpd.RemoveValueChanged(sender, handler)))

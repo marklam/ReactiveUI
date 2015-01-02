@@ -56,11 +56,11 @@
     <Compile Include="..\ReactiveUI.FSharp\Reflection.fs">
       <Link>Reflection.fs</Link>
     </Compile>
-    <Compile Include="..\ReactiveUI.FSharp\ICreatesObservableForProperty.fs">
-      <Link>ICreatesObservableForProperty.fs</Link>
-    </Compile>
     <Compile Include="..\ReactiveUI.FSharp\ObservedChange.fs">
       <Link>ObservedChange.fs</Link>
+    </Compile>
+    <Compile Include="..\ReactiveUI.FSharp\ICreatesObservableForProperty.fs">
+      <Link>ICreatesObservableForProperty.fs</Link>
     </Compile>
     <Compile Include="..\ReactiveUI.FSharp\ObservedChangedMixin.fs">
       <Link>ObservedChangedMixin.fs</Link>

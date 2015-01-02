@@ -16,46 +16,47 @@ type NotifyChanged() =
             services |> Seq.maxBy(fun x -> x.GetAffinityForObject(t, s, b))
         new MemoizingMRUCache<_,_>(Func<_,_,_>(calcFunc), RxApp.BigCacheLimit)
 
-    static let notifyForProperty(sender : obj, expression : Expr, beforeChange : bool) : IObservable<IObservedChange<obj, obj>> =
+    static let notifyForProperty(sender : obj, expression : Expr, beforeChange : bool) : IObservable<FSObservedChange<obj, obj>> =
         let result = lock notifyFactoryCache (fun () -> notifyFactoryCache.Get((sender.GetType(), (expression |> Expression.getName), beforeChange)))
         result.GetNotificationForProperty(sender, expression, beforeChange)
 
-    static let observedChangeFor(expression : Expr, sourceChange : IObservedChange<obj, obj>) : IObservedChange<obj, obj> =
-        if (sourceChange.Value = null) then FSObservedChange<obj, obj>(sourceChange.Value, expression) :> IObservedChange<obj, obj>
-                                       else match Reflection.tryGetValueForPropertyChain(sourceChange.Value, [expression]) with
-                                            | Some value -> FSObservedChange<obj, obj>(sourceChange.Value, expression, value) :> IObservedChange<obj, obj>
-                                            | None       -> failwith "TODO"
+    static let observedChangeFor(expression : Expr, sourceChange : FSObservedChange<obj, obj>) : FSObservedChange<obj, obj> =
+        if (null = sourceChange.Value)
+            then FSObservedChange<obj, obj>(sourceChange.Value, expression)
+            else let value = Reflection.tryGetValueForPropertyChain(sourceChange.Value, [expression])
+                 FSObservedChange<obj, obj>(sourceChange.Value, expression, value)
 
-    static let nestedObservedChanges(expression : Expr, sourceChange : IObservedChange<obj, obj>, beforeChange : bool) : IObservable<IObservedChange<obj, obj>> =
+    static let nestedObservedChanges(expression : Expr, sourceChange : FSObservedChange<obj, obj>, beforeChange : bool) : IObservable<FSObservedChange<obj, obj>> =
         // Make sure a change at a root node propogates events down
         let kicker = observedChangeFor(expression, sourceChange)
 
         // Handle null values in the chain
-        if (sourceChange.Value = null) then Observable.Return(kicker)
-                                       else notifyForProperty(sourceChange.Value, expression, beforeChange).
-                                                Select(fun x -> FSObservedChange(x.Sender, expression, x.GetValue()) :> IObservedChange<_,_>).
-                                                StartWith(kicker)
+        if (null = sourceChange.Value)
+            then Observable.Return(kicker)
+            else notifyForProperty(sourceChange.Value, expression, beforeChange).
+                    Select(fun x -> FSObservedChange(x.Sender, expression, (x |> FSObservedChange.tryGetValue))).
+                    StartWith(kicker)
 
     static do
         RxApp.EnsureInitialized()
         let registrations = ReactiveUI.FSharp.Registrations() :> IWantsToRegisterStuff
         registrations.Register(Action<Func<obj>,Type>(fun (f : Func<obj>) t -> Locator.CurrentMutable.RegisterConstant(f.Invoke(), t)))
 
-    static member subscribeToExpressionChain(source : 'TSender, expression : Expr, ?beforeChange (* = false *), ?skipInitial (* = true *)) : IObservable<IObservedChange<'TSender, 'TValue>> =
+    static member subscribeToExpressionChain(source : 'TSender, expression : Expr, ?beforeChange (* = false *), ?skipInitial (* = true *)) : IObservable<FSObservedChange<'TSender, 'TValue>> =
         let beforeChange = defaultArg beforeChange false
         let skipInitial =  defaultArg skipInitial  true
         let (chain : Expr list) = expression |> Expression.rewrite |> Expression.getExpressionChain
 
-        let mutable notifier = Observable.Return(FSObservedChange<obj, obj>(source, Expr.Var(Var("_", typeof<'TSender>)), source) :> IObservedChange<_,_>)
+        let mutable notifier = Observable.Return(FSObservedChange<obj, obj>(source, Expr.Var(Var("_", typeof<'TSender>)), source :> obj |> Some))
         notifier <- chain |> Seq.fold (fun n expr -> n.Select(fun y -> nestedObservedChanges(expr, y, beforeChange)).Switch()) notifier 
         if skipInitial then notifier <- notifier.Skip(1)
         notifier <- notifier.Where(fun x -> x.Sender <> null)
 
         let r = notifier.Select(fun x -> match x.Value with
-                                         | :? 'TValue as value -> FSObservedChange<'TSender, 'TValue>(source, expression, value)
-                                         | x when box x = null -> FSObservedChange<'TSender, 'TValue>(source, expression, Unchecked.defaultof<'TValue>)
+                                         | :? 'TValue as value -> FSObservedChange<'TSender, 'TValue>(source, expression, Some value)
+                                         | x when box x = null -> FSObservedChange<'TSender, 'TValue>(source, expression, None)
                                          | x -> raise (InvalidCastException(String.Format("Unable to cast from {0} to {1}.", x.GetType(), typeof<'TValue>)))
-                                         :> IObservedChange<'TSender, 'TValue>)
+                                         )
 
         r.DistinctUntilChanged(fun x -> x.Value)
 

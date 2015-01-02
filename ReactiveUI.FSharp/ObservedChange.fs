@@ -2,12 +2,15 @@
 
 open Microsoft.FSharp.Quotations
 open ReactiveUI
+open System
 
-type FSObservedChange<'TSender, 'TValue>(sender:'TSender, expression:Expr, ?value:'TValue) =
-    let value = lazy(defaultArg value (match Reflection.tryGetValueForPropertyChain(sender, expression |> Expression.getExpressionChain) with Some v -> v | None -> Unchecked.defaultof<'TValue>))
+type FSObservedChange<'TSender, 'TValue>(sender:'TSender, expression:Expr, ?value : 'TValue option) =
+    let mutable value = defaultArg value None
+    let getCachedValue() = if value.IsNone then value <- Reflection.tryGetValueForPropertyChain(sender, expression |> Expression.getExpressionChain)
+                           value
 
-    do 
-        if obj.Equals(sender, Unchecked.defaultof<'TSender>) then failwith "WTF"
+//    do 
+//        if obj.Equals(sender, Unchecked.defaultof<'TSender>) then failwith "WTF"
 
     /// <summary>
     /// Attempts to return the current value of a property given a 
@@ -18,10 +21,7 @@ type FSObservedChange<'TSender, 'TValue>(sender:'TSender, expression:Expr, ?valu
     /// expression.</param>
     /// <returns>True if the entire expression was able to be followed,
     /// false otherwise</returns>
-    static member tryGetValue (this : FSObservedChange<'TSender, 'TValue>) =
-        if not (obj.Equals(this.Value, Unchecked.defaultof<'TValue>))
-            then this.Value |> Some
-            else Reflection.tryGetValueForPropertyChain(this.Sender, this.Expression |> Expression.getExpressionChain)
+    static member tryGetValue (this : FSObservedChange<'TSender, 'TValue>) = Reflection.tryGetValueForPropertyChain(this.Sender, this.Expression |> Expression.getExpressionChain)
 
     /// <summary>
     /// Returns the current value of a property given a notification that
@@ -30,7 +30,7 @@ type FSObservedChange<'TSender, 'TValue>(sender:'TSender, expression:Expr, ?valu
     /// <returns>The current value of the property</returns>
     static member getValue (this : FSObservedChange<'TSender, 'TValue>) =
         match (this |> FSObservedChange.tryGetValue) with
-        | None     -> failwith (sprintf "One of the properties in the expression '%s' was null" (this.GetPropertyName()))
+        | None     -> failwith (sprintf "One of the properties in the expression '%s' was null" (FSObservedChange.getPropertyName this))
         | Some ret -> ret
 
     static member getPropertyName(this : FSObservedChange<'TSender, 'TValue>) =
@@ -38,10 +38,12 @@ type FSObservedChange<'TSender, 'TValue>(sender:'TSender, expression:Expr, ?valu
 
     member this.Expression = expression
     member this.Sender     = sender
-    member this.Value      = value.Force()
+    member this.Value      = match getCachedValue() with
+                             | Some v -> v
+                             | None   -> Unchecked.defaultof<'TValue>
 
-    interface IObservedChange<'TSender,'TValue> with
-        member this.Expression = null
-        member this.Sender     = this.Sender
-        member this.Value      = this.Value 
+//    interface IObservedChange<'TSender,'TValue> with
+//        member this.Expression = raise (NotSupportedException("Linq Expressions not supported by FSObservedChange (for FSharp Expr types)"))
+//        member this.Sender     = this.Sender
+//        member this.Value      = this.Value 
 

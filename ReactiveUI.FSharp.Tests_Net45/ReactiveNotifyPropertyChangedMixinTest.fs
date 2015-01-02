@@ -37,7 +37,7 @@ type ReactiveNotifyPropertyChangedMixinTest() =
             Assert.Equal(3, changes.Count)
 
             Assert.True(changes.All(fun x -> x.Sender = fixture))
-            Assert.True(changes.All(fun x -> x.GetPropertyName() = "IsOnlyOneWord"))
+            Assert.True(changes.All(fun x -> x |> FSObservedChange.getPropertyName = "IsOnlyOneWord"))
             changes.Select(fun x -> x.Value).AssertAreEqual([| "Foo"; "Bar"; "Baz" |])
         )
 
@@ -64,7 +64,7 @@ type ReactiveNotifyPropertyChangedMixinTest() =
             Assert.Equal(3, changes.Count)
 
             Assert.True(changes.All(fun x -> x.Sender = fixture))
-            Assert.True(changes.All(fun x -> x.GetPropertyName() = "Child.IsOnlyOneWord"))
+            Assert.True(changes.All(fun x -> x |> FSObservedChange.getPropertyName = "Child.IsOnlyOneWord"))
             changes.Select(fun x -> x.Value).AssertAreEqual([| "Foo"; "Bar"; "Baz" |])
         )
 
@@ -102,7 +102,7 @@ type ReactiveNotifyPropertyChangedMixinTest() =
             Assert.Equal(4, changes.Count)
 
             Assert.True(changes.All(fun x -> x.Sender = fixture))
-            Assert.True(changes.All(fun x -> x.GetPropertyName() = "Child.IsOnlyOneWord"))
+            Assert.True(changes.All(fun x -> x |> FSObservedChange.getPropertyName = "Child.IsOnlyOneWord"))
             changes.Select(fun x -> x.Value).AssertAreEqual([| "Foo"; "Bar"; null; "Baz" |])
         )
 
@@ -132,7 +132,7 @@ type ReactiveNotifyPropertyChangedMixinTest() =
             Assert.Equal(3, changes.Count)
 
             Assert.True(changes.All(fun x -> x.Sender = fixture))
-            Assert.True(changes.All(fun x -> x.GetPropertyName() = "Child.IsOnlyOneWord"))
+            Assert.True(changes.All(fun x -> x |> FSObservedChange.getPropertyName = "Child.IsOnlyOneWord"))
             changes.Select(fun x -> x.Value).AssertAreEqual([| "Foo"; "Bar"; null |])
         )
 
@@ -228,8 +228,8 @@ type ReactiveNotifyPropertyChangedMixinTest() =
             fixture.SomeOtherParam <- 5
             fixture.Child.IsNotNullString <- "Foo"
 
-            let output1 = ResizeArray<IObservedChange<HostTestFixture, int>>()
-            let output2 = ResizeArray<IObservedChange<HostTestFixture, string>>()
+            let output1 = ResizeArray<FSObservedChange<HostTestFixture, int>>()
+            let output2 = ResizeArray<FSObservedChange<HostTestFixture, string>>()
             fixture.WhenAny(<@ fun (x : HostTestFixture) -> x.SomeOtherParam @>, <@ fun (x : HostTestFixture) -> x.Child.IsNotNullString @>, fun x y -> (x,y)).Subscribe(fun (sop, nns) -> output1.Add(sop); output2.Add(nns)) |> ignore
 
             sched.Start()
@@ -263,11 +263,11 @@ type ReactiveNotifyPropertyChangedMixinTest() =
     let WhenAnyShouldWorkEvenWithNormalProperties() =
         let fixture = new TestFixture(IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf")
 
-        let output = new ResizeArray<IObservedChange<TestFixture, string>>()
+        let output = new ResizeArray<FSObservedChange<TestFixture, string>>()
         fixture.WhenAny(<@ fun (x : TestFixture) -> x.PocoProperty @>, fun x -> x).Subscribe(output.Add) |> ignore
         let output2 = new ResizeArray<string>()
         fixture.WhenAnyValue(<@ fun (x : TestFixture) -> x.PocoProperty @>).Subscribe(output2.Add) |> ignore
-        let output3 = new ResizeArray<IObservedChange<TestFixture, Nullable<int>>>()
+        let output3 = new ResizeArray<FSObservedChange<TestFixture, Nullable<int>>>()
         fixture.WhenAny(<@ fun (x : TestFixture) -> x.NullableInt @>, fun x -> x).Subscribe(output3.Add) |> ignore
 
         let output4 = new ResizeArray<Nullable<int>>()
@@ -275,7 +275,7 @@ type ReactiveNotifyPropertyChangedMixinTest() =
            
         Assert.Equal(1, output.Count)
         Assert.Equal(fixture, output.[0].Sender)
-        Assert.Equal<string>("PocoProperty", output.[0].GetPropertyName())
+        Assert.Equal<string>("PocoProperty", output.[0] |> FSObservedChange.getPropertyName)
         Assert.Equal<string>("Bamf", output.[0].Value)
 
         Assert.Equal(1, output2.Count)
@@ -283,7 +283,7 @@ type ReactiveNotifyPropertyChangedMixinTest() =
 
         Assert.Equal(1, output3.Count)
         Assert.Equal(fixture, output3.[0].Sender)
-        Assert.Equal<string>("NullableInt", output3.[0].GetPropertyName())
+        Assert.Equal<string>("NullableInt", output3.[0] |> FSObservedChange.getPropertyName)
         Assert.Null(output3.[0].Value)
 
         Assert.Equal(1, output4.Count)
@@ -382,7 +382,7 @@ type ReactiveNotifyPropertyChangedMixinTest() =
             Assert.Equal(3, changes.Count)
 
             Assert.True(changes.All(fun x -> x.Sender = fixture))
-            Assert.True(changes.All(fun x -> x.GetPropertyName() = "IsOnlyOneWord"))
+            Assert.True(changes.All(fun x -> x |> FSObservedChange.getPropertyName = "IsOnlyOneWord"))
             changes.Select(fun x -> x.Value).AssertAreEqual([| "Foo"; "Bar"; "Baz" |])
         )
 
@@ -400,7 +400,7 @@ type ReactiveNotifyPropertyChangedMixinTest() =
             Assert.Equal(2, changes.Count)
 
             Assert.True(changes.All(fun x -> x.Sender = fixture))
-            Assert.True(changes.All(fun x -> x.GetPropertyName() = "IsOnlyOneWord"))
+            Assert.True(changes.All(fun x -> x |> FSObservedChange.getPropertyName = "IsOnlyOneWord"))
             changes.Select(fun x -> x.Value).AssertAreEqual([| "Pre"; "Foo" |])
         )
 
@@ -422,7 +422,7 @@ type ReactiveNotifyPropertyChangedMixinTest() =
             Assert.Equal(2, changes.Count)
 
             Assert.True(changes.All(fun x -> x.Sender = fixture))
-            Assert.True(changes.All(fun x -> x.GetPropertyName() = "IsOnlyOneWord"))
+            Assert.True(changes.All(fun x -> x |> FSObservedChange.getPropertyName = "IsOnlyOneWord"))
             changes.Select(fun x -> x.Value).AssertAreEqual([|  "Pre"; "Foo" |])
         )
 
@@ -449,7 +449,7 @@ type ReactiveNotifyPropertyChangedMixinTest() =
             Assert.Equal(3, changes.Count)
 
             Assert.True(changes.All(fun x -> x.Sender = fixture))
-            Assert.True(changes.All(fun x -> x.GetPropertyName() = "IsOnlyOneWord"))
+            Assert.True(changes.All(fun x -> x |> FSObservedChange.getPropertyName = "IsOnlyOneWord"))
             changes.Select(fun x -> x.Value).AssertAreEqual([|  "Foo"; "Bar"; "Foo" |])
         )
 

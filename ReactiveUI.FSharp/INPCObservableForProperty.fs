@@ -18,7 +18,7 @@ type INPCObservableForProperty() =
             let target = if beforeChanged then  typeof<INotifyPropertyChanging> else typeof<INotifyPropertyChanged>
             if target.GetTypeInfo().IsAssignableFrom(``type``.GetTypeInfo()) then 5 else 0
 
-        member this.GetNotificationForProperty(sender : obj, expression : Expr, beforeChanged : bool) : IObservable<IObservedChange<obj, obj>> =
+        member this.GetNotificationForProperty(sender : obj, expression : Expr, beforeChanged : bool) : IObservable<FSObservedChange<obj, obj>> =
             let before = match sender with | :? INotifyPropertyChanging as before -> Some before | _ -> None
             let after  = match sender with | :? INotifyPropertyChanged  as after  -> Some after | _ -> None
 
@@ -29,12 +29,12 @@ type INPCObservableForProperty() =
 
             match beforeChanged, before, after with
             | true, None, _
-            | false, _, None -> Observable.Never<IObservedChange<obj, obj>>()
+            | false, _, None -> Observable.Never<FSObservedChange<obj, obj>>()
             | true, Some before, _ ->
                 let obs = Observable.FromEventPattern<PropertyChangingEventHandler, PropertyChangingEventArgs>(before.PropertyChanging.AddHandler, before.PropertyChanging.RemoveHandler)
                 obs.Where(fun x -> x.EventArgs.PropertyName.Equals(name)).
-                    Select(fun x -> FSObservedChange<obj, obj>(sender, expression) :> IObservedChange<obj, obj>)
+                    Select(fun _ -> FSObservedChange<obj, obj>(sender, expression))
             | false, _, Some after ->
                 let obs = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(after.PropertyChanged.AddHandler, after.PropertyChanged.RemoveHandler)
                 obs.Where(fun x -> x.EventArgs.PropertyName.Equals(name)).
-                    Select(fun x -> FSObservedChange<obj, obj>(sender, expression) :> IObservedChange<obj, obj>)
+                    Select(fun _ -> FSObservedChange<obj, obj>(sender, expression))
