@@ -46,12 +46,12 @@ type NotifyChanged() =
         let skipInitial =  defaultArg skipInitial  true
         let (chain : Expr list) = expression |> Expression.rewrite |> Expression.getExpressionChain
 
-        let mutable notifier = Observable.Return(FSObservedChange<obj, obj>(null, expression, source) :> IObservedChange<_,_>)
+        let mutable notifier = Observable.Return(FSObservedChange<obj, obj>(source, Expr.Var(Var("_", typeof<'TSender>)), source) :> IObservedChange<_,_>)
         notifier <- chain |> Seq.fold (fun n expr -> n.Select(fun y -> nestedObservedChanges(expr, y, beforeChange)).Switch()) notifier 
         if skipInitial then notifier <- notifier.Skip(1)
         notifier <- notifier.Where(fun x -> x.Sender <> null)
 
-        let r = notifier.Select(fun x -> match x.GetValue() with
+        let r = notifier.Select(fun x -> match x.Value with
                                          | :? 'TValue as value -> FSObservedChange<'TSender, 'TValue>(source, expression, value)
                                          | x when box x = null -> FSObservedChange<'TSender, 'TValue>(source, expression, Unchecked.defaultof<'TValue>)
                                          | x -> raise (InvalidCastException(String.Format("Unable to cast from {0} to {1}.", x.GetType(), typeof<'TValue>)))

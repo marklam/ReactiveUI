@@ -4,6 +4,11 @@ open Microsoft.FSharp.Quotations
 open ReactiveUI
 
 type FSObservedChange<'TSender, 'TValue>(sender:'TSender, expression:Expr, ?value:'TValue) =
+    let value = lazy(defaultArg value (match Reflection.tryGetValueForPropertyChain(sender, expression |> Expression.getExpressionChain) with Some v -> v | None -> Unchecked.defaultof<'TValue>))
+
+    do 
+        if obj.Equals(sender, Unchecked.defaultof<'TSender>) then failwith "WTF"
+
     /// <summary>
     /// Attempts to return the current value of a property given a 
     /// notification that it has changed. If any property in the
@@ -33,7 +38,7 @@ type FSObservedChange<'TSender, 'TValue>(sender:'TSender, expression:Expr, ?valu
 
     member this.Expression = expression
     member this.Sender     = sender
-    member this.Value      = defaultArg value Unchecked.defaultof<'TValue>
+    member this.Value      = value.Force()
 
     interface IObservedChange<'TSender,'TValue> with
         member this.Expression = null
